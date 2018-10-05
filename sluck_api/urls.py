@@ -14,5 +14,7 @@ urlpatterns = [
     url(r'^messages/group/$', views.get_group_messages, name='get_group_messages'),
     url(r'^message/like/$', views.like_message, name='like_message'),
     url(r'^message/dislike/$', views.dislike_message, name='dislike_message'),
-    url(r'^message/reactions/$', views.get_reactions, name='message_reactions')
+    url(r'^message/reactions/$', views.get_reactions, name='message_reactions'),
+    url(r'^search/hashtag/$', views.search_hashtag, name='search_hashtag'),
+    url(r'^search/username/$', views.search_username, name='search_username')
 ]

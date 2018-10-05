@@ -24,29 +24,30 @@ class Message(models.Model):
   updated_at = models.DateTimeField(auto_now_add=True)
 
   def publish(self):
+    self.save()
     hashtags_ = extract_tags(self.text, "#")
     for text in hashtags_:
       results = Hashtag.objects.filter(hashtag_text=text)
       if results.count() == 0:
         new_hashtag = Hashtag(hashtag_text=text)
-        new_hashtag.save()
-    self.save()
+        new_hashtag.publish()
+        message_hashtag = MessageHashtag(message_id=self.id,
+                                         hashtag_id=new_hashtag.id)
+        message_hashtag.publish()
+      else:
+        hashtag = results[0]
+        message_hashtag = MessageHashtag(message_id=self.id,
+                                         hashtag_id=hashtag.id)
+        message_hashtag.publish()
 
   def hashtags(self):
-    hashtags_ = extract_tags(self.text, "#")
     hashtags = []
-    for text in hashtags_:
-      results = Hashtag.objects.filter(hashtag_text=text)
-      if results.count() > 0:
-        dicc = {'hashtag_id': results[0].id,
-                'hashtag_text': results[0].hashtag_text}
-        hashtags.append(dicc)
-      else:
-        new_hashtag = Hashtag(hashtag_text=text)
-        new_hashtag.save()
-        dicc = {'hashtag_id': new_hashtag.id,
-                'hashtag_text': text}
-        hashtags.append(dicc)
+    results = MessageHashtag.objects.filter(message_id=self.id)
+    for message_hashtag in results:
+      hashtag = Hashtag.objects.filter(id=message_hashtag.hashtag_id)[0]
+      dicc = {'hashtag_id': hashtag.id,
+              'hashtag_text': hashtag.hashtag_text}
+      hashtags.append(dicc)
     return hashtags
 
   def mentions(self):
@@ -127,6 +128,13 @@ class UserGroup(models.Model):
 
   user_id = models.IntegerField()
   group_id = models.IntegerField()
+
+  def publish(self):
+    self.save()
+
+class MessageHashtag(models.Model):
+  message_id = models.IntegerField()
+  hashtag_id = models.IntegerField()
 
   def publish(self):
     self.save()
