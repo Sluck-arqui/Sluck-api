@@ -9,7 +9,7 @@ from sluck_api.models import Message, User, Group, MessageHashtag, Hashtag, \
 def get_group(request):
     if request.method == 'GET':
         try:
-            group_id = request.GET.get('group_id')[0]
+            group_id = request.GET.get('group_id')
             groups = Group.objects.filter(id=group_id)
             group = groups[0]
         except (IndexError, TypeError):
@@ -19,7 +19,7 @@ def get_group(request):
             json_dumps_params={'indent': 2})
     elif request.method == 'DELETE':
         try:
-            group_id = request.GET.get('group_id')[0]
+            group_id = request.GET.get('group_id')
             groups = Group.objects.filter(id=group_id)
             group = groups[0]
             group.delete()
@@ -55,8 +55,8 @@ def new_group(request):
 def group_member(request):
     if request.method == 'POST':
         try:
-            group_id = request.GET.get('group_id')[0]
-            user_id = request.GET.get('user_id')[0]
+            group_id = request.GET.get('group_id')
+            user_id = request.GET.get('user_id')
             groups = Group.objects.filter(id=group_id)
             group = groups[0]
             new_member = UserGroup(user_id=user_id, group_id=group_id)
@@ -69,8 +69,8 @@ def group_member(request):
     elif request.method == 'DELETE':
         # requests.delete(url, params={'group_id':3, 'user_id':1})
         try:
-            group_id = request.GET.get('group_id')[0]
-            user_id = request.GET.get('user_id')[0]
+            group_id = request.GET.get('group_id')
+            user_id = request.GET.get('user_id')
             groups = Group.objects.filter(id=group_id)
             group = groups[0]
             new_member = UserGroup.objects.filter(user_id=user_id, group_id=group_id)

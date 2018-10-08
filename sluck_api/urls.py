@@ -10,7 +10,6 @@ from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
     url(r'^message/$', csrf_exempt(views.messages.get_message), name='get_message'),
     url(r'^message/group/$', csrf_exempt(views.messages.post_message), name='post_message'),
-    url(r'^messages/group/$', views.messages.get_group_messages, name='get_group_messages'),
     url(r'^message/like/$', csrf_exempt(views.messages.like_message), name='like_message'),
     url(r'^message/dislike/$', csrf_exempt(views.messages.dislike_message), name='dislike_message'),
     url(r'^message/reactions/$', views.messages.get_reactions, name='message_reactions'),

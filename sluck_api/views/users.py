@@ -10,7 +10,7 @@ import datetime
 def get_user(request):
     if request.method == 'GET':
         try:
-            user_id = request.GET.get('user_id')[0]
+            user_id = request.GET.get('user_id')
             users = User.objects.filter(id=user_id)
             user = users[0]
         except (IndexError, TypeError):
@@ -20,7 +20,7 @@ def get_user(request):
             json_dumps_params={'indent': 2})
     elif request.method == 'DELETE':
         try:
-            user_id = request.GET.get('user_id')[0]
+            user_id = request.GET.get('user_id')
             users = User.objects.filter(id=user_id)
             user = users[0]
             user.delete()
@@ -31,7 +31,7 @@ def get_user(request):
             json_dumps_params={'indent': 2})
     elif request.method == 'PATCH':
         try:
-            user_id = request.GET.get('user_id')[0]
+            user_id = request.GET.get('user_id')
             users = User.objects.filter(id=user_id)
             user = users[0]
             mail = request.GET.get('email')
