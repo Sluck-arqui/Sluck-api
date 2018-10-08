@@ -132,9 +132,7 @@ def get_reactions(request):
             limit = request.GET.get('limit')
         else:
             limit = 50
-        print(message_id)
         messages = Message.objects.filter(id=message_id)
-        print(messages)
         message = messages[0]
     except (IndexError, TypeError):
         return JsonResponse({'status_code': 404, 'status_text': 'Object message not found.'}, 

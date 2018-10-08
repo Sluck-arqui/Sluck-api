@@ -14,7 +14,9 @@ def user_serializer(user):
 def message_serializer(message, only_likes=False, limit=5):
   if only_likes:
     return {'likes': message.likes(),
-            'like_authors': message.like_authors()[:limit]}
+            'like_authors': message.like_authors()[:limit],
+            'dislikes': message.dislikes(),
+            'dislike_authors': message.dislike_authors()[:limit]}
   else:
     return {'id': message.id,
             'text': message.text,
