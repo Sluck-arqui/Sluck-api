@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^message/like/$', csrf_exempt(views.messages.like_message), name='like_message'),
     url(r'^message/dislike/$', csrf_exempt(views.messages.dislike_message), name='dislike_message'),
     url(r'^message/reactions/$', views.messages.get_reactions, name='message_reactions'),
+    url(r'^message/comment/$', csrf_exempt(views.messages.post_comment), name='post_comment'),
 
     url(r'^search/hashtag/$', views.searches.search_hashtag, name='search_hashtag'),
     url(r'^search/username/$', views.searches.search_username, name='search_username'),
