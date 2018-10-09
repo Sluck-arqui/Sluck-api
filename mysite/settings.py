@@ -125,4 +125,4 @@ STATIC_URL = '/static/'
 
 # Encription
 
-FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', '')
+FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', '415Wx_TWYIUAZqAgMPdxoEJwCRW5_veUTbxJ5l7Qj0k=')
