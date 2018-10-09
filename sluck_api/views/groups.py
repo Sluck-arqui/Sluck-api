@@ -19,7 +19,8 @@ def get_group(request):
             json_dumps_params={'indent': 2})
     elif request.method == 'DELETE':
         try:
-            group_id = request.GET.get('group_id')
+            data = json.loads(request.body)
+            group_id = data.get('group_id')
             groups = Group.objects.filter(id=group_id)
             group = groups[0]
             group.delete()
@@ -33,12 +34,12 @@ def get_group(request):
                             json_dumps_params={'indent': 2})
 
 
-# requests.post(url, params={'name':'Second group', 'description':'This is the second group'})
+# requests.post(url, data={'name':'Second group', 'description':'This is the second group'})
 def new_group(request):
     if request.method == 'POST':
         try:
-            name = request.GET.get('name')
-            description = request.GET.get('description')
+            name = request.POST.get('name')
+            description = request.POST.get('description')
             group = Group(name=name, description=description)
             group.publish()
         except (IndexError, TypeError):
@@ -51,12 +52,12 @@ def new_group(request):
                             json_dumps_params={'indent': 2})
 
 
-# requests.post(url, params={'group_id':3, 'user_id':1})
+# requests.post(url, data={'group_id':3, 'user_id':1})
 def group_member(request):
     if request.method == 'POST':
         try:
-            group_id = request.GET.get('group_id')
-            user_id = request.GET.get('user_id')
+            group_id = request.POST.get('group_id')
+            user_id = request.POST.get('user_id')
             groups = Group.objects.filter(id=group_id)
             group = groups[0]
             new_member = UserGroup(user_id=user_id, group_id=group_id)
@@ -69,8 +70,9 @@ def group_member(request):
     elif request.method == 'DELETE':
         # requests.delete(url, params={'group_id':3, 'user_id':1})
         try:
-            group_id = request.GET.get('group_id')
-            user_id = request.GET.get('user_id')
+            data = json.loads(request.body)
+            group_id = data.get('group_id')
+            user_id = data.get('user_id')
             groups = Group.objects.filter(id=group_id)
             group = groups[0]
             new_member = UserGroup.objects.filter(user_id=user_id, group_id=group_id)

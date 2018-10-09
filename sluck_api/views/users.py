@@ -20,7 +20,8 @@ def get_user(request):
             json_dumps_params={'indent': 2})
     elif request.method == 'DELETE':
         try:
-            user_id = request.GET.get('user_id')
+            data = json.loads(request.body)
+            user_id = data.get('user_id')
             users = User.objects.filter(id=user_id)
             user = users[0]
             user.delete()
@@ -31,11 +32,12 @@ def get_user(request):
             json_dumps_params={'indent': 2})
     elif request.method == 'PATCH':
         try:
-            user_id = request.GET.get('user_id')
+            data = json.loads(request.body)
+            user_id = data.get('user_id')
             users = User.objects.filter(id=user_id)
             user = users[0]
-            mail = request.GET.get('email')
-            password = request.GET.get('password')
+            mail = data.get('email')
+            password = data.get('password')
             user.email = mail
             user.password = password
             user.updated_at = datetime.datetime.now() 
