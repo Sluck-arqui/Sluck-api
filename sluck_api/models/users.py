@@ -1,11 +1,12 @@
 from django.db import models
+from encrypted_model_fields.fields import EncryptedCharField
 
 
 class User(models.Model):
   username = models.TextField()
   first_name = models.TextField()
   last_name = models.TextField()
-  password = models.TextField()
+  password = EncryptedCharField(max_length=100)
   email = models.EmailField()
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now_add=True)
