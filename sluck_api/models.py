@@ -52,6 +52,14 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def likes(self):
+        return self.likers.count()
+
+    @property
+    def dislikes(self):
+        return self.dislikers.count()
+
     def publish(self):
         self.save()
         new_hashtags_texts = extract_tags(self.text, '#')
@@ -61,7 +69,7 @@ class Message(models.Model):
             if hashtag:
                 new_hashtags.append(hashtag[0])
             else:
-                new_hashtags.append(Hashtag.objects.create(text=self.text))
+                new_hashtags.append(Hashtag.objects.create(text=hashtag_text))
         self.hashtags.set(new_hashtags)
         new_mentions_usernames = extract_tags(self.text, '@')
         new_mentions = []
@@ -70,6 +78,7 @@ class Message(models.Model):
             if user:
                 new_mentions.append(user[0])
         self.mentions.set(new_mentions)
+        return self
 
 
 class ThreadMessage(models.Model):
@@ -90,6 +99,14 @@ class ThreadMessage(models.Model):
     dislikers = models.ManyToManyField(User, related_name='disliked_threads')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def likes(self):
+        return self.likers.count()
+
+    @property
+    def dislikes(self):
+        return self.dislikers.count()
 
     def publish(self):
         self.save()

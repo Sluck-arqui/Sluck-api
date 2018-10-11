@@ -44,6 +44,7 @@ def load():
             email=fake.email()
         )
         user.save()
+        user.groups.add(public_group)
         users.append(user)
         for _ in range(N_MESSAGES_PER_USER):
             message = Message.objects.create(
