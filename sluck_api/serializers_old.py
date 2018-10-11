@@ -8,110 +8,24 @@ from .models import (
 )
 
 
-# class UserSerializer(serializers.Serializer):
-#     username = serializers.CharField(required=True)
-#     first_name = serializers.CharField(required=True)
-#     last_name = serializers.CharField(required=True)
-#     password = serializers.CharField(required=True)
-#     email = serializers.EmailField(required=True)
-#
-#     def create(self, validated_data):
-#         """
-#         Create and return a new `Snippet` instance, given the validated data.
-#         """
-#         return User.objects.create(**validated_data)
-#
-#     def update(self, instance, validated_data):
-#         """
-#         Update and return an existing `Snippet` instance, given the validated data.
-#         """
-#         instance.username = validated_data.get('username', instance.username)
-#         instance.first_name = validated_data.get('first_name', instance.first_name)
-#         instance.last_name = validated_data.get('last_name', instance.last_name)
-#         instance.password = validated_data.get('password', instance.password)
-#         instance.email = validated_data.get('email', instance.email)
-#         instance.save()
-#         return instance
-#
-#
-# class MessageSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Message
-#         fields = ('url', 'name')
+class UserSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            'username',
-            'first_name',
-            'last_name',
-            'password',
-            'email',
-            'threads',
-            'messages',
-            'groups',
-            'mentions',
-            'liked_messages',
-            'disliked_messages',
-            'liked_threads',
-            'disliked_threads',
-            'created_at',
-            'updated_at',
-        )
+    def create(self, validated_data):
+        return User.objects.create(**validated_data)
 
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = (
-            'name',
-            'description',
-            'messages',
-            'members',
-        )
-
-
-class HashtagSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Hashtag
-        fields = (
-            'text',
-            'messages',
-            'thread_messages',
-        )
-
-
-class MessageSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Message
-        fields = (
-            'text',
-            'author',
-            'group',
-            'mentions',
-            'hashtags',
-            'likers',
-            'dislikers',
-            'created_at',
-            'updated_at',
-        )
-
-
-class ThreadMessageSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = ThreadMessage
-        fields = (
-            'text',
-            'author',
-            'message',
-            'mentions',
-            'hashtags',
-            'likers',
-            'dislikers',
-            'created_at',
-            'updated_at',
-        )
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.password = validated_data.get('password', instance.password)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+        return instance
 
 
 #

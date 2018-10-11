@@ -8,58 +8,52 @@ from .models import (
 )
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
+            'id',
             'username',
             'first_name',
             'last_name',
             'password',
             'email',
-            'threads',
-            'messages',
-            'groups',
-            'mentions',
-            'liked_messages',
-            'disliked_messages',
-            'liked_threads',
-            'disliked_threads',
             'created_at',
             'updated_at',
         )
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = (
+            'id',
             'name',
             'description',
-            'messages',
-            'members',
         )
 
 
-class HashtagSerializer(serializers.HyperlinkedModelSerializer):
+class HashtagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hashtag
         fields = (
+            'id',
             'text',
             'messages',
             'thread_messages',
         )
 
 
-class MessageSerializer(serializers.HyperlinkedModelSerializer):
+class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = (
+            'id',
             'text',
             'author',
             'group',
-            'mentions',
             'hashtags',
+            'mentions',
             'likers',
             'dislikers',
             'created_at',
@@ -67,10 +61,11 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ThreadMessageSerializer(serializers.HyperlinkedModelSerializer):
+class ThreadMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThreadMessage
         fields = (
+            'id',
             'text',
             'author',
             'message',

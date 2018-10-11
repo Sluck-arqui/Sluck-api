@@ -23,10 +23,6 @@ urlpatterns = [
     # url(r'^search/hashtag/$', views.searches.search_hashtag, name='search_hashtag'),
     # url(r'^search/username/$', views.searches.search_username, name='search_username'),
 
-    # url(r'^register/$', views.register, name='register'),
-    # url(r'^user/$', views.get_user, name='get_user'),
-    # url(r'^users/$', views.users, name='get_all_users'),
-
     # url(r'^group/$', csrf_exempt(views.groups.get_group), name='get_group'),
     # url(r'^group/new/$', csrf_exempt(views.groups.new_group), name='new_group'),
     # url(r'^group/member/$', csrf_exempt(views.groups.group_member), name='group_member'),
