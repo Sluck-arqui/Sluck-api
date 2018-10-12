@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^message/comment/like/$', views.like_thread, name='like_thread'),
     url(r'^message/comment/dislike/$', views.dislike_thread, name='dislike_thread'),
     url(r'^message/comment/reactions/$', views.get_thread_reactions, name='thread_reactions'),
+    url(r'^search/hashtag/$', views.search_hashtag, name='search_hashtag'),
+    url(r'^search/username/$', views.search_username, name='search_username'),
 ]

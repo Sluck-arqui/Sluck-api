@@ -347,7 +347,9 @@ class GroupTestCase(TestCase):
         data = {'group_id': self.group.id, 'user_id': self.user1.id}
         expected_response = {
             'id': self.group.id,
-            'members': [self.user1.id],
+            'members': [
+                {'id': 1, 'username': 'nachocontreras'},
+            ],
             'description': self.group.description,
             'name': self.group.name,
         }
@@ -371,7 +373,10 @@ class GroupTestCase(TestCase):
         data = {'group_id': self.group.id, 'user_id': self.user2.id}
         expected_response = {
             'id': self.group.id,
-            'members': [self.user1.id, self.user2.id],
+            'members': [
+                {'id': 1, 'username': 'nachocontreras'},
+                {'id': 2, 'username': 'raiperez'},
+            ],
             'description': self.group.description,
             'name': self.group.name,
         }
@@ -395,7 +400,9 @@ class GroupTestCase(TestCase):
         data = {'group_id': self.group.id, 'user_id': self.user1.id}
         expected_response = {
             'id': self.group.id,
-            'members': [self.user2.id],
+            'members': [
+                {'id': 2, 'username': 'raiperez'},
+            ],
             'description': self.group.description,
             'name': self.group.name,
         }
@@ -1024,3 +1031,197 @@ class ThreadMessageTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         for key in expected_response:
             self.assertEqual(parsed_response[key], expected_response[key])
+
+
+class SearchTestCase(TestCase):
+
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.group = Group.objects.create(
+            name='cabros',
+            description='Grupo de cabros'
+        )
+        self.user = User.objects.create(
+            username='raiperez',
+            first_name='Raimundo',
+            last_name='Perez',
+            email='mimail2@uc.cl',
+            password='password',
+        )
+        self.non_posting_user = User.objects.create(
+            username='noposteo',
+            first_name='Yo No',
+            last_name='Posteo',
+            email='postingisfordummies@uc.cl',
+            password='password',
+        )
+        self.message = Message(
+            text='Mensaje woohoo #wena!  @raiperez jeje @hola',
+            author=self.user,
+            group=self.group,
+        ).publish()
+        self.message2 = Message(
+            text='#wena!  Este es otro mensaje conel mismo hashtag',
+            author=self.user,
+            group=self.group,
+        ).publish()
+        self.message3 = Message(
+            text='Nunca pueden ser demasiados #wena!',
+            author=self.user,
+            group=self.group,
+        ).publish()
+
+    def test_search_hashtag(self):
+        view = views.search_hashtag
+        data = {
+            'text': 'wena!',
+        }
+        request = self.factory.get('/search/hashtag/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+
+        expected_response = [
+            {
+                'id': self.message.id,
+                'author': self.user.id,
+                'group': self.group.id,
+                'text': self.message.text,
+                'likes': self.message.likes,
+                'dislikes': self.message.dislikes,
+                'hashtags': [
+                    {'id': 1, 'text': 'wena!'},
+                ],
+                'mentions': [
+                    {'id': self.user.id, 'username': self.user.username},
+                ],
+                'likers': [],
+                'dislikers': [],
+                'threads': [],
+            },
+            {
+                'id': self.message2.id,
+                'author': self.user.id,
+                'group': self.group.id,
+                'text': self.message2.text,
+                'likes': self.message2.likes,
+                'dislikes': self.message2.dislikes,
+                'hashtags': [
+                    {'id': 1, 'text': 'wena!'},
+                ],
+                'mentions': [],
+                'likers': [],
+                'dislikers': [],
+                'threads': [],
+            },
+            {
+                'id': self.message3.id,
+                'author': self.user.id,
+                'group': self.group.id,
+                'text': self.message3.text,
+                'likes': self.message3.likes,
+                'dislikes': self.message3.dislikes,
+                'hashtags': [
+                    {'id': 1, 'text': 'wena!'},
+                ],
+                'mentions': [],
+                'likers': [],
+                'dislikers': [],
+                'threads': [],
+            },
+        ]
+
+        for expected_message, received_message in zip(expected_response, parsed_response):
+            for key in expected_message:
+                self.assertEqual(received_message[key], expected_message[key])
+
+    def test_no_matching_hashtags(self):
+        view = views.search_hashtag
+        data = {
+            'text': 'hashtag_inexistente',
+        }
+        request = self.factory.get('/search/hashtag/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+
+        expected_response = []
+
+        self.assertEqual(expected_response, parsed_response)
+
+    def test_search_username(self):
+        view = views.search_username
+        data = {
+            'username': self.user.username,
+        }
+        request = self.factory.get('/search/username/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+
+        expected_response = [
+            {
+                'id': self.message.id,
+                'author': self.user.id,
+                'group': self.group.id,
+                'text': self.message.text,
+                'likes': self.message.likes,
+                'dislikes': self.message.dislikes,
+                'hashtags': [
+                    {'id': 1, 'text': 'wena!'},
+                ],
+                'mentions': [
+                    {'id': self.user.id, 'username': self.user.username},
+                ],
+                'likers': [],
+                'dislikers': [],
+                'threads': [],
+            },
+            {
+                'id': self.message2.id,
+                'author': self.user.id,
+                'group': self.group.id,
+                'text': self.message2.text,
+                'likes': self.message2.likes,
+                'dislikes': self.message2.dislikes,
+                'hashtags': [
+                    {'id': 1, 'text': 'wena!'},
+                ],
+                'mentions': [],
+                'likers': [],
+                'dislikers': [],
+                'threads': [],
+            },
+            {
+                'id': self.message3.id,
+                'author': self.user.id,
+                'group': self.group.id,
+                'text': self.message3.text,
+                'likes': self.message3.likes,
+                'dislikes': self.message3.dislikes,
+                'hashtags': [
+                    {'id': 1, 'text': 'wena!'},
+                ],
+                'mentions': [],
+                'likers': [],
+                'dislikers': [],
+                'threads': [],
+            },
+        ]
+
+        for expected_message, received_message in zip(expected_response, parsed_response):
+            for key in expected_message:
+                self.assertEqual(received_message[key], expected_message[key])
+
+    def test_no_matching_usernames(self):
+        view = views.search_username
+        data = {
+            'username': self.non_posting_user.username,
+        }
+        request = self.factory.get('/search/username/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        expected_response = []
+
+        self.assertEqual(expected_response, parsed_response)

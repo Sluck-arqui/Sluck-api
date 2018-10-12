@@ -507,3 +507,39 @@ def get_thread_reactions(request):
         return JsonResponse(
             STATUS_CODE_400, status=400)
     return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def search_hashtag(request):
+    if request.method == 'GET':
+        data = request.GET
+        hashtag_text = data.get('text', None)
+        limit = data.get('limit', 50)
+        if hashtag_text:
+            hashtag = Hashtag.objects.filter(text=hashtag_text)
+            messages = Message.objects.filter(hashtags__text=hashtag_text)
+            if messages:
+                serializer = MessageSerializer(messages, many=True)
+                return JsonResponse(serializer.data, safe=False, status=200)
+            return JsonResponse([], safe=False, status=200)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def search_username(request):
+    if request.method == 'GET':
+        data = request.GET
+        username = data.get('username', None)
+        limit = data.get('limit', 50)
+        if username:
+            user = User.objects.filter(username=username)
+            if user:
+                messages = user[0].messages.all()
+                serializer = MessageSerializer(messages, many=True)
+                return JsonResponse(serializer.data, safe=False, status=200)
+            return JsonResponse([], safe=False, status=200)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)

@@ -95,6 +95,8 @@ class UserSummarySerializer(serializers.ModelSerializer):
 
 class GroupSerializer(serializers.ModelSerializer):
     """General usage Group Serializer"""
+    members = UserSummarySerializer(many=True, read_only=True)
+
     class Meta:
         model = Group
         fields = (
@@ -335,3 +337,25 @@ class ThreadMessageReactionsSerializer(serializers.ModelSerializer):
             'likes',
             'dislikes',
         )
+
+
+
+### PERHAPS USE THIS LATER FOR HIGHER CUSTOMIZATION ###
+# class UserSerializer(serializers.Serializer):
+#     username = serializers.CharField(required=True)
+#     first_name = serializers.CharField(required=True)
+#     last_name = serializers.CharField(required=True)
+#     password = serializers.CharField(required=True)
+#     email = serializers.EmailField(required=True)
+#
+#     def create(self, validated_data):
+#         return User.objects.create(**validated_data)
+#
+#     def update(self, instance, validated_data):
+#         instance.username = validated_data.get('username', instance.username)
+#         instance.first_name = validated_data.get('first_name', instance.first_name)
+#         instance.last_name = validated_data.get('last_name', instance.last_name)
+#         instance.password = validated_data.get('password', instance.password)
+#         instance.email = validated_data.get('email', instance.email)
+#         instance.save()
+#         return instance
