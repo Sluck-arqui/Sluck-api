@@ -110,3 +110,20 @@ class ThreadMessage(models.Model):
 
     def publish(self):
         self.save()
+        new_hashtags_texts = extract_tags(self.text, '#')
+        new_hashtags = []
+        for hashtag_text in new_hashtags_texts:
+            hashtag = Hashtag.objects.filter(text=hashtag_text)
+            if hashtag:
+                new_hashtags.append(hashtag[0])
+            else:
+                new_hashtags.append(Hashtag.objects.create(text=hashtag_text))
+        self.hashtags.set(new_hashtags)
+        new_mentions_usernames = extract_tags(self.text, '@')
+        new_mentions = []
+        for username in new_mentions_usernames:
+            user = User.objects.filter(username=username)
+            if user:
+                new_mentions.append(user[0])
+        self.mentions.set(new_mentions)
+        return self

@@ -14,47 +14,6 @@ from .models import Message, User, Group, Hashtag, ThreadMessage
 import datetime
 import json
 
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-
-
-class HashtagViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = Hashtag.objects.all()
-    serializer_class = HashtagSerializer
-
-
-class MessageViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Message.objects.all()
-    serializer_class = GroupSerializer
-
-
-class ThreadMessageViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = ThreadMessage.objects.all()
-    serializer_class = UserSerializer
-
-
 #
 #
 # @csrf_exempt
@@ -126,83 +85,83 @@ class ThreadMessageViewSet(viewsets.ModelViewSet):
 #         return JsonResponse({'status_text': 'Unauthorized'}, status=401)
 #
 #
-# # Por ahora http://127.0.0.1:8000/user/?user_id=1
-# # requests.get(url, params={'user_id':1})
-# def get_user2(request):
-#     if request.method == 'GET':
-#         try:
-#             user_id = request.GET.get('user_id')
-#             users = User.objects.filter(id=user_id)
-#             user = users[0]
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object user not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 200, 'status_text':'Ok', 'user': user_serializer(user)},
-#             json_dumps_params={'indent': 2})
-#     elif request.method == 'DELETE':
-#         try:
-#             data = json.loads(request.body)
-#             user_id = data.get('user_id')
-#             users = User.objects.filter(id=user_id)
-#             user = users[0]
-#             user.delete()
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object user not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 200, 'status_text':'Deleted successfully'},
-#             json_dumps_params={'indent': 2})
-#     elif request.method == 'PATCH':
-#         try:
-#             data = json.loads(request.body)
-#             user_id = data.get('user_id')
-#             users = User.objects.filter(id=user_id)
-#             user = users[0]
-#             mail = data.get('email')
-#             password = data.get('password')
-#             user.email = mail
-#             user.password = password
-#             user.updated_at = datetime.datetime.now()
-#             user.publish()
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object user not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 200, 'status_text':'Updated successfully', 'user': user_serializer(user)},
-#             json_dumps_params={'indent': 2})
-#     else:
-#         return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
-#                             json_dumps_params={'indent': 2})
+# Por ahora http://127.0.0.1:8000/user/?user_id=1
+# requests.get(url, params={'user_id':1})
+def get_user2(request):
+    if request.method == 'GET':
+        try:
+            user_id = request.GET.get('user_id')
+            users = User.objects.filter(id=user_id)
+            user = users[0]
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object user not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 200, 'status_text':'Ok', 'user': user_serializer(user)},
+            json_dumps_params={'indent': 2})
+    elif request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            user_id = data.get('user_id')
+            users = User.objects.filter(id=user_id)
+            user = users[0]
+            user.delete()
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object user not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 200, 'status_text':'Deleted successfully'},
+            json_dumps_params={'indent': 2})
+    elif request.method == 'PATCH':
+        try:
+            data = json.loads(request.body)
+            user_id = data.get('user_id')
+            users = User.objects.filter(id=user_id)
+            user = users[0]
+            mail = data.get('email')
+            password = data.get('password')
+            user.email = mail
+            user.password = password
+            user.updated_at = datetime.datetime.now()
+            user.publish()
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object user not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 200, 'status_text':'Updated successfully', 'user': user_serializer(user)},
+            json_dumps_params={'indent': 2})
+    else:
+        return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
+                            json_dumps_params={'indent': 2})
 #
 #
 #
-# # http://127.0.0.1:8000/group/?group_id=1
-# # requests.get(url, params={'group_id':1})
-# def get_group(request):
-#     if request.method == 'GET':
-#         try:
-#             group_id = request.GET.get('group_id')
-#             groups = Group.objects.filter(id=group_id)
-#             group = groups[0]
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object group not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 200, 'status_text':'Ok', 'group': group_serializer(group)},
-#             json_dumps_params={'indent': 2})
-#     elif request.method == 'DELETE':
-#         try:
-#             data = json.loads(request.body)
-#             group_id = data.get('group_id')
-#             groups = Group.objects.filter(id=group_id)
-#             group = groups[0]
-#             group.delete()
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object group not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 200, 'status_text':'Deleted successfully'},
-#             json_dumps_params={'indent': 2})
-#     else:
-#         return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
-#                             json_dumps_params={'indent': 2})
-#
+# http://127.0.0.1:8000/group/?group_id=1
+# requests.get(url, params={'group_id':1})
+def get_group(request):
+    if request.method == 'GET':
+        try:
+            group_id = request.GET.get('group_id')
+            groups = Group.objects.filter(id=group_id)
+            group = groups[0]
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object group not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 200, 'status_text':'Ok', 'group': group_serializer(group)},
+            json_dumps_params={'indent': 2})
+    elif request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            group_id = data.get('group_id')
+            groups = Group.objects.filter(id=group_id)
+            group = groups[0]
+            group.delete()
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object group not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 200, 'status_text':'Deleted successfully'},
+            json_dumps_params={'indent': 2})
+    else:
+        return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
+                            json_dumps_params={'indent': 2})
+
 #
 # # requests.post(url, data={'name':'Second group', 'description':'This is the second group'})
 # def new_group(request):
@@ -222,39 +181,39 @@ class ThreadMessageViewSet(viewsets.ModelViewSet):
 #                             json_dumps_params={'indent': 2})
 #
 #
-# # requests.post(url, data={'group_id':3, 'user_id':1})
-# def group_member(request):
-#     if request.method == 'POST':
-#         try:
-#             group_id = request.POST.get('group_id')
-#             user_id = request.POST.get('user_id')
-#             groups = Group.objects.filter(id=group_id)
-#             group = groups[0]
-#             new_member = UserGroup(user_id=user_id, group_id=group_id)
-#             new_member.publish()
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object group not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 200, 'status_text':'Added successfully',
-#             'group': group_serializer(group)}, json_dumps_params={'indent': 2})
-#     elif request.method == 'DELETE':
-#         # requests.delete(url, params={'group_id':3, 'user_id':1})
-#         try:
-#             data = json.loads(request.body)
-#             group_id = data.get('group_id')
-#             user_id = data.get('user_id')
-#             groups = Group.objects.filter(id=group_id)
-#             group = groups[0]
-#             new_member = UserGroup.objects.filter(user_id=user_id, group_id=group_id)
-#             new_member.delete()
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object group or user not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 200, 'status_text':'Deleted successfully'},
-#                             json_dumps_params={'indent': 2})
-#     else:
-#         return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
-#                             json_dumps_params={'indent': 2})
+# requests.post(url, data={'group_id':3, 'user_id':1})
+def group_member(request):
+    if request.method == 'POST':
+        try:
+            group_id = request.POST.get('group_id')
+            user_id = request.POST.get('user_id')
+            groups = Group.objects.filter(id=group_id)
+            group = groups[0]
+            new_member = UserGroup(user_id=user_id, group_id=group_id)
+            new_member.publish()
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object group not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 200, 'status_text':'Added successfully',
+            'group': group_serializer(group)}, json_dumps_params={'indent': 2})
+    elif request.method == 'DELETE':
+        # requests.delete(url, params={'group_id':3, 'user_id':1})
+        try:
+            data = json.loads(request.body)
+            group_id = data.get('group_id')
+            user_id = data.get('user_id')
+            groups = Group.objects.filter(id=group_id)
+            group = groups[0]
+            new_member = UserGroup.objects.filter(user_id=user_id, group_id=group_id)
+            new_member.delete()
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object group or user not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 200, 'status_text':'Deleted successfully'},
+                            json_dumps_params={'indent': 2})
+    else:
+        return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
+                            json_dumps_params={'indent': 2})
 #
 #
 #
@@ -339,23 +298,23 @@ class ThreadMessageViewSet(viewsets.ModelViewSet):
 #                             json_dumps_params={'indent': 2})
 #
 #
-# # requests.post(url, data={'message_id':3})
-# def like_message(request):
-#     if request.method == 'POST':
-#         try:
-#             message_id = request.POST.get('message_id')
-#             results = Message.objects.filter(id=message_id)
-#             message = results[0]
-#             new_like = MessageLike(message_id=message_id, user_id=1)
-#             # Por mientras usuario 1, luego se revisa con los headers y las keys
-#             new_like.publish()
-#         except (IndexError, TypeError):
-#             return JsonResponse({'status_code': 404, 'status_text': 'Object message not found.'},
-#             json_dumps_params={'indent': 2})
-#         return JsonResponse({'status_code': 201, 'status_text':'Created successfully', 'message': message_serializer(message)},
-#         json_dumps_params={'indent': 2})
-#     return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
-#                        json_dumps_params={'indent': 2})
+# requests.post(url, data={'message_id':3})
+def like_message(request):
+    if request.method == 'POST':
+        try:
+            message_id = request.POST.get('message_id')
+            results = Message.objects.filter(id=message_id)
+            message = results[0]
+            new_like = MessageLike(message_id=message_id, user_id=1)
+            # Por mientras usuario 1, luego se revisa con los headers y las keys
+            new_like.publish()
+        except (IndexError, TypeError):
+            return JsonResponse({'status_code': 404, 'status_text': 'Object message not found.'},
+            json_dumps_params={'indent': 2})
+        return JsonResponse({'status_code': 201, 'status_text':'Created successfully', 'message': message_serializer(message)},
+        json_dumps_params={'indent': 2})
+    return JsonResponse({'status_code': 405, 'status_text': 'Method not allowed.'},
+                       json_dumps_params={'indent': 2})
 #
 #
 # # requests.post(url, data={'message_id':3})
@@ -444,32 +403,32 @@ class ThreadMessageViewSet(viewsets.ModelViewSet):
 #                             json_dumps_params={'indent': 2})
 #
 #
-# # # requests.get(url, params={'text': 'Comer'})
-# # http://127.0.0.1:8000/search/hashtag/?text=Comer
-# def search_hashtag(request):
-#     try:
-#         text = request.GET.get('text')
-#         if 'limit' in request.GET:
-#             limit = request.GET.get('limit')
-#         else:
-#             limit = 50
-#         hashtags = Hashtag.objects.filter(hashtag_text=text)
-#         hashtag = hashtags[0]
-#         message_hashtags = MessageHashtag.objects.filter(hashtag_id=hashtag.id)
-#         i = 0
-#         messages = []
-#         for mes_has in message_hashtags:
-#             if i < limit:
-#                 message = Message.objects.filter(id=mes_has.message_id)[0]
-#                 messages.append(message_serializer(message))
-#             i += 1
-#
-#     except (IndexError, TypeError):
-#         return JsonResponse({'status_code': 404, 'status_text': 'Object message not found.'},
-#         json_dumps_params={'indent': 2})
-#     return JsonResponse({'status_code': 200, 'status_text':'Ok',
-#         'messages': messages},
-#         json_dumps_params={'indent': 2})
+# # requests.get(url, params={'text': 'Comer'})
+# http://127.0.0.1:8000/search/hashtag/?text=Comer
+def search_hashtag(request):
+    try:
+        text = request.GET.get('text')
+        if 'limit' in request.GET:
+            limit = request.GET.get('limit')
+        else:
+            limit = 50
+        hashtags = Hashtag.objects.filter(hashtag_text=text)
+        hashtag = hashtags[0]
+        message_hashtags = MessageHashtag.objects.filter(hashtag_id=hashtag.id)
+        i = 0
+        messages = []
+        for mes_has in message_hashtags:
+            if i < limit:
+                message = Message.objects.filter(id=mes_has.message_id)[0]
+                messages.append(message_serializer(message))
+            i += 1
+
+    except (IndexError, TypeError):
+        return JsonResponse({'status_code': 404, 'status_text': 'Object message not found.'},
+        json_dumps_params={'indent': 2})
+    return JsonResponse({'status_code': 200, 'status_text':'Ok',
+        'messages': messages},
+        json_dumps_params={'indent': 2})
 #
 #
 # # http://127.0.0.1:8000/search/username/?username=nachocontreras

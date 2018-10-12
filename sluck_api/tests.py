@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 import sluck_api.views as views
-from unittest import skip
+from unittest import skip, skipIf
 import json
 from .models import (
     User,
@@ -15,11 +15,14 @@ from .serializers import (
     GroupSerializer,
     HashtagSerializer,
     MessageSerializer,
+    MessageReactionsSerializer,
     ThreadMessageSerializer,
+    ThreadMessageReactionsSerializer,
 )
 from .utils import (
     STATUS_CODE_200_DELETE,
     STATUS_CODE_400,
+    STATUS_CODE_403,
     STATUS_CODE_404,
     STATUS_CODE_405,
 )
@@ -339,7 +342,6 @@ class GroupTestCase(TestCase):
 
     def test_group_member(self):
         view = views.group_member
-        view_get_group = views.get_group
 
         # Add first member
         data = {'group_id': self.group.id, 'user_id': self.user1.id}
@@ -434,6 +436,12 @@ class MessageTestCase(TestCase):
             author=self.user,
             group=self.group,
         ).publish()
+        self.liked_message = Message(
+            text='Este mensaje sera likeado',
+            author=self.user,
+            group=self.group,
+        ).publish()
+        self.liked_message.likers.add(self.user)
 
     def test_create_message(self):
         view = views.post_message
@@ -582,79 +590,437 @@ class MessageTestCase(TestCase):
         self.assertEqual(response.status_code, 405)
         self.assertEqual(parsed_response, expected_response)
 
-    @skip
-    def test_message_member(self):
-        view = views.message_member
-        view_get_message = views.get_message
+    def test_react_to_message(self):
+        like_view = views.like_message
+        dislike_view = views.dislike_message
 
-        # Add first member
-        data = {'message_id': self.message.id, 'user_id': self.user1.id}
+        # Like
+        data = {'message_id': self.message.id, 'user_id': self.user.id}
         expected_response = {
             'id': self.message.id,
-            'members': [self.user1.id],
-            'description': self.message.description,
-            'name': self.message.name,
+            'author': self.user.id,
+            'group': self.group.id,
+            'text': self.message.text,
+            'likes': 1,
+            'dislikes': 0,
+            'hashtags': [
+                {'id': 1, 'text': 'wena!'},
+            ],
+            'mentions': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'likers': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'dislikers': [],
+            'threads': [],
         }
-        request = self.factory.post('/message/member/', data, format='json')
-        response = view(request)
+        request = self.factory.post('/message/like/', data, format='json')
+        response = like_view(request)
         parsed_response = json.loads(response.content)
 
-        # Check response
+        # Check response and DB Data
         self.assertEqual(response.status_code, 201)
-        for key in expected_response:
-            self.assertEqual(parsed_response[key], expected_response[key])
-
-        # Check DB
-        parsed_response = MessageSerializer(
+        db_data = MessageSerializer(
             Message.objects.get(id=self.message.id)
         ).data
         for key in expected_response:
             self.assertEqual(parsed_response[key], expected_response[key])
-
-        # Add second member
-        data = {'message_id': self.message.id, 'user_id': self.user2.id}
+            self.assertEqual(db_data[key], expected_response[key])
+        # Can't Dislike
+        data = {'message_id': self.message.id, 'user_id': self.user.id}
+        request = self.factory.post('/message/dislike/', data, format='json')
+        response = dislike_view(request)
+        parsed_response = json.loads(response.content)
+        expected_response = STATUS_CODE_403
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(parsed_response, expected_response)
+        # Unlike
+        data = {'message_id': self.message.id, 'user_id': self.user.id}
         expected_response = {
             'id': self.message.id,
-            'members': [self.user1.id, self.user2.id],
-            'description': self.message.description,
-            'name': self.message.name,
+            'author': self.user.id,
+            'group': self.group.id,
+            'text': self.message.text,
+            'likes': 0,
+            'dislikes': 0,
+            'hashtags': [
+                {'id': 1, 'text': 'wena!'},
+            ],
+            'mentions': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'likers': [],
+            'dislikers': [],
+            'threads': [],
         }
-        request = self.factory.post('/message/member/', data, format='json')
-        response = view(request)
+        request = self.factory.post('/message/like/', data, format='json')
+        response = like_view(request)
         parsed_response = json.loads(response.content)
 
-        # Check response
+        # Check response and DB Data
         self.assertEqual(response.status_code, 201)
-        for key in expected_response:
-            self.assertEqual(parsed_response[key], expected_response[key])
-
-        # Check DB
-        parsed_response = MessageSerializer(
+        db_data = MessageSerializer(
             Message.objects.get(id=self.message.id)
         ).data
         for key in expected_response:
             self.assertEqual(parsed_response[key], expected_response[key])
-
-        # Delete first user
-        data = {'message_id': self.message.id, 'user_id': self.user1.id}
+            self.assertEqual(db_data[key], expected_response[key])
+        # Dislike
+        data = {'message_id': self.message.id, 'user_id': self.user.id}
         expected_response = {
             'id': self.message.id,
-            'members': [self.user2.id],
-            'description': self.message.description,
-            'name': self.message.name,
+            'author': self.user.id,
+            'group': self.group.id,
+            'text': self.message.text,
+            'likes': 0,
+            'dislikes': 1,
+            'hashtags': [
+                {'id': 1, 'text': 'wena!'},
+            ],
+            'mentions': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'likers': [],
+            'dislikers': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'threads': [],
         }
-        request = self.factory.delete('/message/member/', data, format='json')
+        request = self.factory.post('/message/dislike/', data, format='json')
+        response = dislike_view(request)
+        parsed_response = json.loads(response.content)
+
+        # Check response and DB Data
+        self.assertEqual(response.status_code, 201)
+        db_data = MessageSerializer(
+            Message.objects.get(id=self.message.id)
+        ).data
+        for key in expected_response:
+            self.assertEqual(parsed_response[key], expected_response[key])
+            self.assertEqual(db_data[key], expected_response[key])
+
+    def test_get_message_reactions(self):
+        view = views.get_message_reactions
+        data = {'message_id': self.liked_message.id}
+        request = self.factory.get('/message/reactions', data, format='json')
         response = view(request)
         parsed_response = json.loads(response.content)
 
-        # Check response
+        expected_response = {
+            'id': self.liked_message.id,
+            'likes': 1,
+            'dislikes': 0,
+            'likers': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'dislikers': [],
+        }
+
         self.assertEqual(response.status_code, 200)
         for key in expected_response:
             self.assertEqual(parsed_response[key], expected_response[key])
 
-        # Check DB
-        parsed_response = MessageSerializer(
-            Message.objects.get(id=self.message.id)
+
+class ThreadMessageTestCase(TestCase):
+
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.group = Group.objects.create(
+            name='cabros',
+            description='Grupo de cabros'
+        )
+        self.user = User.objects.create(
+            username='raiperez',
+            first_name='Raimundo',
+            last_name='Perez',
+            email='mimail2@uc.cl',
+            password='password',
+        )
+        self.user2 = User.objects.create(
+            username='nachocontreras',
+            first_name='Ignacio',
+            last_name='Contreras',
+            email='mimail@uc.cl',
+            password='password',
+        )
+        self.message = Message(
+            text='Mensaje con muchos comentarios',
+            author=self.user,
+            group=self.group,
+        ).publish()
+
+        self.thread = ThreadMessage(
+            text='Comentario1',
+            author=self.user,
+            message=self.message,
+        ).publish()
+        self.liked_thread = ThreadMessage(
+            text='Este mensaje sera likeado',
+            author=self.user,
+            message=self.message,
+        ).publish()
+        self.liked_thread.likers.add(self.user)
+
+    def test_create_thread(self):
+        view = views.post_comment
+        data = {
+            'user_id': self.user.id,
+            'message_id': self.message.id,
+            'text': 'Esto es un comentario woohoo! #primerthread',
+        }
+        request = self.factory.post('/message/comment/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+        expected_response = {
+            'author': self.user.id,
+            'message': self.message.id,
+            'text': 'Esto es un comentario woohoo! #primerthread',
+            'likes': 0,
+            'dislikes': 0,
+            'hashtags': [
+                {'id': 1, 'text': 'primerthread'},
+            ],
+            'mentions': [],
+            'likers': [],
+            'dislikers': [],
+        }
+        self.assertEqual(response.status_code, 201)
+        created_thread = ThreadMessageSerializer(
+            ThreadMessage.objects.get(id=parsed_response['id'])).data
+        for key in expected_response:
+            self.assertEqual(expected_response[key], parsed_response[key])
+            self.assertEqual(expected_response[key], created_thread[key])
+
+    @skipIf(True, "Doesn't exist yet?")
+    def test_get_thread(self):
+        view = views.get_thread
+        data = {'thread_id': self.thread.id}
+        request = self.factory.get('/thread/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+
+        expected_response = {
+            'id': self.thread.id,
+            'author': self.user.id,
+            'group': self.group.id,
+            'text': self.thread.text,
+            'likes': self.thread.likes,
+            'dislikes': self.thread.dislikes,
+            'hashtags': [
+                {'id': 1, 'text': 'wena!'},
+            ],
+            'mentions': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'likers': [],
+            'dislikers': [],
+            'threads': [],
+        }
+        self.assertEqual(response.status_code, 200)
+        for key in expected_response:
+            self.assertEqual(parsed_response[key], expected_response[key])
+
+    def test_update_thread(self):
+        view = views.post_comment
+        data = {
+            'thread_id': self.thread.id,
+            'text': 'mensaje editado!',
+        }
+        request = self.factory.patch('/message/comment/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+        expected_response = {
+            'id': self.thread.id,
+            'author': self.user.id,
+            'message': self.message.id,
+            'text': 'mensaje editado!',
+            'likes': self.thread.likes,
+            'dislikes': self.thread.dislikes,
+            'hashtags': [],
+            'mentions': [],
+            'likers': [],
+            'dislikers': [],
+        }
+        self.assertEqual(response.status_code, 200)
+        updated_thread = ThreadMessageSerializer(
+            ThreadMessage.objects.get(id=self.thread.id)).data
+        for key in expected_response:
+            self.assertEqual(parsed_response[key], expected_response[key])
+            self.assertEqual(parsed_response[key], updated_thread[key])
+
+    def test_delete_thread(self):
+        view = views.post_comment
+        data = {'thread_id': self.thread.id}
+        request = self.factory.delete('/message/comment/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+
+        expected_response = STATUS_CODE_200_DELETE
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(parsed_response, expected_response)
+        with self.assertRaises(ThreadMessage.DoesNotExist):
+            deleted_thread = ThreadMessage.objects.get(id=self.thread.id)
+
+    @skipIf(True, "Should Develop GET and Switch POST to other Endpoint")
+    def test_thread_not_found(self):
+        view = views.post_comment
+        data = {'thread_id': 50}
+
+        expected_response = STATUS_CODE_404
+
+        # GET
+        request = self.factory.get('/message/comment/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(parsed_response, expected_response)
+
+        # PATCH
+        request = self.factory.patch('/message/comment/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(parsed_response, expected_response)
+
+        # DELETE
+        request = self.factory.delete('/message/comment/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(parsed_response, expected_response)
+
+    @skipIf(True, "Should Figure Out Once New Endpoint is created")
+    def test_post_is_not_allowed(self):
+        view = views.post_comment
+        data = {
+            'user_id': self.user.id,
+            'group_id': self.group.id,
+            'text': 'Otro comentairio de #ejemplo',
+        }
+        request = self.factory.post('/thread/', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+        expected_response = STATUS_CODE_405
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(parsed_response, expected_response)
+
+    def test_react_to_thread(self):
+        like_view = views.like_thread
+        dislike_view = views.dislike_thread
+
+        # Like
+        data = {'thread_id': self.thread.id, 'user_id': self.user.id}
+        expected_response = {
+            'id': self.thread.id,
+            'author': self.user.id,
+            'message': self.message.id,
+            'text': self.thread.text,
+            'likes': 1,
+            'dislikes': 0,
+            'hashtags': [],
+            'mentions': [],
+            'likers': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'dislikers': [],
+        }
+        request = self.factory.post('/messages/comment/like/', data, format='json')
+        response = like_view(request)
+        parsed_response = json.loads(response.content)
+
+        # Check response and DB Data
+        self.assertEqual(response.status_code, 201)
+        db_data = ThreadMessageSerializer(
+            ThreadMessage.objects.get(id=self.thread.id)
         ).data
+        for key in expected_response:
+            self.assertEqual(parsed_response[key], expected_response[key])
+            self.assertEqual(db_data[key], expected_response[key])
+        # Can't Dislike
+        data = {'thread_id': self.thread.id, 'user_id': self.user.id}
+        request = self.factory.post('/messages/comment/dislike/', data, format='json')
+        response = dislike_view(request)
+        parsed_response = json.loads(response.content)
+        expected_response = STATUS_CODE_403
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(parsed_response, expected_response)
+        # Unlike
+        data = {'thread_id': self.thread.id, 'user_id': self.user.id}
+        expected_response = {
+            'id': self.thread.id,
+            'author': self.user.id,
+            'message': self.message.id,
+            'text': self.thread.text,
+            'likes': 0,
+            'dislikes': 0,
+            'hashtags': [],
+            'mentions': [],
+            'likers': [],
+            'dislikers': [],
+        }
+        request = self.factory.post('/messages/comment/like/', data, format='json')
+        response = like_view(request)
+        parsed_response = json.loads(response.content)
+
+        # Check response and DB Data
+        self.assertEqual(response.status_code, 201)
+        db_data = ThreadMessageSerializer(
+            ThreadMessage.objects.get(id=self.thread.id)
+        ).data
+        for key in expected_response:
+            self.assertEqual(parsed_response[key], expected_response[key])
+            self.assertEqual(db_data[key], expected_response[key])
+        # Dislike
+        data = {'thread_id': self.thread.id, 'user_id': self.user.id}
+        expected_response = {
+            'id': self.thread.id,
+            'author': self.user.id,
+            'message': self.message.id,
+            'text': self.thread.text,
+            'likes': 0,
+            'dislikes': 1,
+            'hashtags': [],
+            'mentions': [],
+            'likers': [],
+            'dislikers': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+        }
+        request = self.factory.post('/messages/comment/dislike/', data, format='json')
+        response = dislike_view(request)
+        parsed_response = json.loads(response.content)
+
+        # Check response and DB Data
+        self.assertEqual(response.status_code, 201)
+        db_data = ThreadMessageSerializer(
+            ThreadMessage.objects.get(id=self.thread.id)
+        ).data
+        for key in expected_response:
+            self.assertEqual(parsed_response[key], expected_response[key])
+            self.assertEqual(db_data[key], expected_response[key])
+
+    def test_get_thread_reactions(self):
+        view = views.get_thread_reactions
+        data = {'thread_id': self.liked_thread.id}
+        request = self.factory.get('/message/comment/reactions', data, format='json')
+        response = view(request)
+        parsed_response = json.loads(response.content)
+
+        expected_response = {
+            'id': self.liked_thread.id,
+            'likes': 1,
+            'dislikes': 0,
+            'likers': [
+                {'id': self.user.id, 'username': self.user.username},
+            ],
+            'dislikers': [],
+        }
+
+        self.assertEqual(response.status_code, 200)
         for key in expected_response:
             self.assertEqual(parsed_response[key], expected_response[key])

@@ -5,11 +5,15 @@ from .serializers import (
     HashtagSerializer,
     MessageSerializer,
     MessageUpdateSerializer,
+    MessageReactionsSerializer,
     ThreadMessageSerializer,
+    ThreadMessageUpdateSerializer,
+    ThreadMessageReactionsSerializer,
 )
 from .utils import (
     STATUS_CODE_200_DELETE,
     STATUS_CODE_400,
+    STATUS_CODE_403,
     STATUS_CODE_404,
     STATUS_CODE_405,
 )
@@ -296,6 +300,208 @@ def post_message(request):
                 ).publish()
                 serializer = MessageSerializer(message)
                 return JsonResponse(serializer.data, status=201)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def like_message(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        user_id = data.get('user_id', None)
+        message_id = data.get('message_id', None)
+        if user_id and message_id:
+            user = User.objects.filter(id=user_id)
+            message = Message.objects.filter(id=message_id)
+            if user and message:
+                if user[0] in message[0].dislikers.all():
+                    return JsonResponse(STATUS_CODE_403, status=403)
+                if user[0] not in message[0].likers.all():
+                    message[0].likers.add(user[0])
+                    serializer = MessageSerializer(message[0])
+                    return JsonResponse(serializer.data, status=201)
+                else:
+                    message[0].likers.remove(user[0])
+                    serializer = MessageSerializer(message[0])
+                    return JsonResponse(serializer.data, status=201)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def dislike_message(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        user_id = data.get('user_id', None)
+        message_id = data.get('message_id', None)
+        if user_id and message_id:
+            user = User.objects.filter(id=user_id)
+            message = Message.objects.filter(id=message_id)
+            if user and message:
+                if user[0] in message[0].likers.all():
+                    return JsonResponse(STATUS_CODE_403, status=403)
+                if user[0] not in message[0].dislikers.all():
+                    message[0].dislikers.add(user[0])
+                    serializer = MessageSerializer(message[0])
+                    return JsonResponse(serializer.data, status=201)
+                else:
+                    message[0].dislikers.remove(user[0])
+                    serializer = MessageSerializer(message[0])
+                    return JsonResponse(serializer.data, status=201)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def get_message_reactions(request):
+    if request.method == 'GET':
+        data = request.GET
+        message_id = data.get('message_id', None)
+        limit = data.get('limit', 50)
+        if message_id:
+            message = Message.objects.filter(id=message_id)
+            if message:
+                serializer = MessageReactionsSerializer(message[0])
+                return JsonResponse(serializer.data, safe=False, status=200)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def post_comment(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        user_id = data.get('user_id', None)
+        message_id = data.get('message_id', None)
+        text = data.get('text', None)
+        if user_id and message_id and text:
+            user = User.objects.filter(id=user_id)
+            message = Message.objects.filter(id=message_id)
+            if user and message:
+                thread = ThreadMessage(
+                    author=user[0],
+                    message=message[0],
+                    text=text,
+                ).publish()
+                serializer = ThreadMessageSerializer(thread)
+                return JsonResponse(serializer.data, status=201)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+
+    elif request.method == 'PATCH':
+        data = JSONParser().parse(request)
+        thread_id = data.get('thread_id', None)
+        if thread_id:
+            thread = ThreadMessage.objects.filter(id=thread_id)
+            if thread:
+                serializer = ThreadMessageUpdateSerializer(thread[0], data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(
+                        serializer.data, safe=False, status=200)
+                return JsonResponse(serializer.errors, status=400)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+
+    elif request.method == 'DELETE':
+        data = JSONParser().parse(request)
+        thread_id = data.get('thread_id', None)
+        if thread_id:
+            thread = ThreadMessage.objects.filter(id=thread_id)
+            if thread:
+                thread[0].delete()
+                return JsonResponse(
+                    STATUS_CODE_200_DELETE, status=200)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+
+    else:
+        return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def like_thread(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        user_id = data.get('user_id', None)
+        thread_id = data.get('thread_id', None)
+        if user_id and thread_id:
+            user = User.objects.filter(id=user_id)
+            thread = ThreadMessage.objects.filter(id=thread_id)
+            if user and thread:
+                if user[0] in thread[0].dislikers.all():
+                    return JsonResponse(STATUS_CODE_403, status=403)
+                if user[0] not in thread[0].likers.all():
+                    thread[0].likers.add(user[0])
+                    serializer = ThreadMessageSerializer(thread[0])
+                    return JsonResponse(serializer.data, status=201)
+                else:
+                    thread[0].likers.remove(user[0])
+                    serializer = ThreadMessageSerializer(thread[0])
+                    return JsonResponse(serializer.data, status=201)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def dislike_thread(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        user_id = data.get('user_id', None)
+        thread_id = data.get('thread_id', None)
+        if user_id and thread_id:
+            user = User.objects.filter(id=user_id)
+            thread = ThreadMessage.objects.filter(id=thread_id)
+            if user and thread:
+                if user[0] in thread[0].likers.all():
+                    return JsonResponse(STATUS_CODE_403, status=403)
+                if user[0] not in thread[0].dislikers.all():
+                    thread[0].dislikers.add(user[0])
+                    serializer = ThreadMessageSerializer(thread[0])
+                    return JsonResponse(serializer.data, status=201)
+                else:
+                    thread[0].dislikers.remove(user[0])
+                    serializer = ThreadMessageSerializer(thread[0])
+                    return JsonResponse(serializer.data, status=201)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def get_thread_reactions(request):
+    if request.method == 'GET':
+        data = request.GET
+        thread_id = data.get('thread_id', None)
+        limit = data.get('limit', 50)
+        if thread_id:
+            thread = ThreadMessage.objects.filter(id=thread_id)
+            if thread:
+                serializer = ThreadMessageReactionsSerializer(thread[0])
+                return JsonResponse(serializer.data, safe=False, status=200)
             return JsonResponse(
                 STATUS_CODE_404, status=404)
         return JsonResponse(
