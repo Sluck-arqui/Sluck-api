@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'sluck_api',
     'encrypted_model_fields',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
+
+AUTH_USER_MODEL = 'sluck_api.User'
 
 
 # Database

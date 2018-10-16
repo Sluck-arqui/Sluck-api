@@ -73,9 +73,32 @@ def register(request):
         data = JSONParser().parse(request)
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            instance, token = serializer.save()
+            data = serializer.data
+            data["oauth_token"] = str(token)
+            data.pop('password', None)
+            return JsonResponse(data, status=201)
         return JsonResponse(serializer.errors, status=400)
+    return JsonResponse(STATUS_CODE_405, status=405)
+
+
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        if data['username'] and data['password']:
+            user = User.objects.filter(username=data['username'])
+            if user:
+                serializer = UserSerializer(user[0])
+                if serializer.data['password'] == data['password']:
+                    token = serializer.get_or_create_token()
+                    data = serializer.data
+                    data["oauth_token"] = str(token)
+                    data.pop('password', None)
+                    return JsonResponse(data, status=201)
+                return JsonResponse({'status_text': 'Incorrect Password or Username'}, status=400)
+            return JsonResponse({'status_text': 'Incorrect Password or Username'}, status=400)
+        return JsonResponse(STATUS_CODE_400, status=400)
     return JsonResponse(STATUS_CODE_405, status=405)
 
 

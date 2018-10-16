@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 from .models import (
     User,
     Group,
@@ -41,6 +42,21 @@ class UserSerializer(serializers.ModelSerializer):
             'disliked_threads',
         )
 
+    def save(self, *args, **kwargs):
+        instance = super(UserSerializer, self).save(*args, **kwargs)
+        print(instance)
+        token = Token.objects.create(user=instance)
+        return instance, token
+
+    def get_or_create_token(self):
+        token = Token.objects.get_or_create(user=self.instance)
+        return token[0]
+
+    def new_token(self):
+        Token.objects.filter(user=self.instance).delete()
+        token = Token.objects.create(user=instance)
+        return token
+        
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     """Update only User serializer, allows only change of email and password"""
