@@ -16,6 +16,7 @@ from .utils import (
     STATUS_CODE_403,
     STATUS_CODE_404,
     STATUS_CODE_405,
+    REACTION_TYPES,
 )
 from rest_framework import viewsets
 from django.http.response import JsonResponse
@@ -308,51 +309,21 @@ def post_message(request):
 
 
 @csrf_exempt
-def like_message(request):
+def reaction_message(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
         user_id = data.get('user_id', None)
         message_id = data.get('message_id', None)
-        if user_id and message_id:
+        reaction_type = data.get('reaction_type', None)
+        if user_id and message_id and reaction_type:
             user = User.objects.filter(id=user_id)
             message = Message.objects.filter(id=message_id)
-            if user and message:
-                if user[0] in message[0].dislikers.all():
+            if user and message and reaction_type in REACTION_TYPES.keys():
+                if user[0] in message[0].reactions.all():
                     return JsonResponse(STATUS_CODE_403, status=403)
-                if user[0] not in message[0].likers.all():
-                    message[0].likers.add(user[0])
-                    serializer = MessageSerializer(message[0])
-                    return JsonResponse(serializer.data, status=201)
-                else:
-                    message[0].likers.remove(user[0])
-                    serializer = MessageSerializer(message[0])
-                    return JsonResponse(serializer.data, status=201)
-            return JsonResponse(
-                STATUS_CODE_404, status=404)
-        return JsonResponse(
-            STATUS_CODE_400, status=400)
-    return JsonResponse(STATUS_CODE_405, status=405)
-
-
-@csrf_exempt
-def dislike_message(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        user_id = data.get('user_id', None)
-        message_id = data.get('message_id', None)
-        if user_id and message_id:
-            user = User.objects.filter(id=user_id)
-            message = Message.objects.filter(id=message_id)
-            if user and message:
-                if user[0] in message[0].likers.all():
-                    return JsonResponse(STATUS_CODE_403, status=403)
-                if user[0] not in message[0].dislikers.all():
-                    message[0].dislikers.add(user[0])
-                    serializer = MessageSerializer(message[0])
-                    return JsonResponse(serializer.data, status=201)
-                else:
-                    message[0].dislikers.remove(user[0])
-                    serializer = MessageSerializer(message[0])
+                if user[0] not in message[0].reactions.all():
+                    message[0].reactions.add(user[0])
+                    serializer = ThreadMessageSerializer(message[0])
                     return JsonResponse(serializer.data, status=201)
             return JsonResponse(
                 STATUS_CODE_404, status=404)
@@ -438,51 +409,21 @@ def post_comment(request):
 
 
 @csrf_exempt
-def like_thread(request):
+def reaction_thread(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
         user_id = data.get('user_id', None)
         thread_id = data.get('thread_id', None)
-        if user_id and thread_id:
+        reaction_type = data.get('reaction_type', None)
+        if user_id and thread_id and reaction_type:
             user = User.objects.filter(id=user_id)
             thread = ThreadMessage.objects.filter(id=thread_id)
-            if user and thread:
-                if user[0] in thread[0].dislikers.all():
+            if user and thread and reaction_type in REACTION_TYPES.keys():
+                if user[0] in thread[0].reactions.all():
                     return JsonResponse(STATUS_CODE_403, status=403)
-                if user[0] not in thread[0].likers.all():
-                    thread[0].likers.add(user[0])
-                    serializer = ThreadMessageSerializer(thread[0])
-                    return JsonResponse(serializer.data, status=201)
-                else:
-                    thread[0].likers.remove(user[0])
-                    serializer = ThreadMessageSerializer(thread[0])
-                    return JsonResponse(serializer.data, status=201)
-            return JsonResponse(
-                STATUS_CODE_404, status=404)
-        return JsonResponse(
-            STATUS_CODE_400, status=400)
-    return JsonResponse(STATUS_CODE_405, status=405)
-
-
-@csrf_exempt
-def dislike_thread(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        user_id = data.get('user_id', None)
-        thread_id = data.get('thread_id', None)
-        if user_id and thread_id:
-            user = User.objects.filter(id=user_id)
-            thread = ThreadMessage.objects.filter(id=thread_id)
-            if user and thread:
-                if user[0] in thread[0].likers.all():
-                    return JsonResponse(STATUS_CODE_403, status=403)
-                if user[0] not in thread[0].dislikers.all():
-                    thread[0].dislikers.add(user[0])
-                    serializer = ThreadMessageSerializer(thread[0])
-                    return JsonResponse(serializer.data, status=201)
-                else:
-                    thread[0].dislikers.remove(user[0])
-                    serializer = ThreadMessageSerializer(thread[0])
+                if user[0] not in thread[0].reactions.all():
+                    thread[0].reactions.add(user[0])
+                    serializer = ThreadSerializer(thread[0])
                     return JsonResponse(serializer.data, status=201)
             return JsonResponse(
                 STATUS_CODE_404, status=404)

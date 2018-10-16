@@ -143,6 +143,7 @@ class MessageSerializer(serializers.ModelSerializer):
     mentions = UserSummarySerializer(many=True, read_only=True)
     likers = UserSummarySerializer(many=True, read_only=True)
     dislikers = UserSummarySerializer(many=True, read_only=True)
+    reactions = UserSummarySerializer(many=True, read_only=True)
 
     class Meta:
         model = Message
@@ -160,6 +161,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'threads',
             'created_at',
             'updated_at',
+            'reactions',
         )
         read_only_fields = (
             'hashtags',
@@ -169,6 +171,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'likes',
             'dislikes',
             'threads',
+            'reactions',
         )
 
     def create(self, validated_data):
@@ -183,6 +186,7 @@ class MessageUpdateSerializer(serializers.ModelSerializer):
     dislikers = UserSummarySerializer(many=True, read_only=True)
     hashtags = HashtagSummarySerializer(many=True, read_only=True)
     mentions = UserSummarySerializer(many=True, read_only=True)
+    reactions = UserSummarySerializer(many=True, read_only=True)
 
     class Meta:
         model = Message
@@ -200,6 +204,7 @@ class MessageUpdateSerializer(serializers.ModelSerializer):
             'threads',
             'created_at',
             'updated_at',
+            'reactions',
         )
         read_only_fields = (
             'id',
@@ -214,6 +219,7 @@ class MessageUpdateSerializer(serializers.ModelSerializer):
             'threads',
             'created_at',
             'updated_at',
+            'reactions',
         )
 
     def update(self, instance, validated_data):
@@ -226,6 +232,7 @@ class MessageReactionsSerializer(serializers.ModelSerializer):
     """Specific for viewing a message's reactions"""
     likers = UserSummarySerializer(many=True, read_only=True)
     dislikers = UserSummarySerializer(many=True, read_only=True)
+    reactions = UserSummarySerializer(many=True, read_only=True)
 
     class Meta:
         model = Message
@@ -235,6 +242,7 @@ class MessageReactionsSerializer(serializers.ModelSerializer):
             'dislikers',
             'likes',
             'dislikes',
+            'reactions',
         )
         read_only_fields = (
             'id',
@@ -242,6 +250,7 @@ class MessageReactionsSerializer(serializers.ModelSerializer):
             'dislikers',
             'likes',
             'dislikes',
+            'reactions',
         )
 
 
@@ -251,6 +260,7 @@ class ThreadMessageSerializer(serializers.ModelSerializer):
     mentions = UserSummarySerializer(many=True, read_only=True)
     likers = UserSummarySerializer(many=True, read_only=True)
     dislikers = UserSummarySerializer(many=True, read_only=True)
+    reactions = UserSummarySerializer(many=True, read_only=True)
 
     class Meta:
         model = ThreadMessage
@@ -267,6 +277,7 @@ class ThreadMessageSerializer(serializers.ModelSerializer):
             'dislikes',
             'created_at',
             'updated_at',
+            'reactions',
         )
         read_only_fields = (
             'hashtags',
@@ -275,6 +286,7 @@ class ThreadMessageSerializer(serializers.ModelSerializer):
             'dislikers',
             'likes',
             'dislikes',
+            'reactions',
         )
 
 
@@ -284,6 +296,7 @@ class ThreadMessageUpdateSerializer(serializers.ModelSerializer):
     dislikers = UserSummarySerializer(many=True, read_only=True)
     hashtags = HashtagSummarySerializer(many=True, read_only=True)
     mentions = UserSummarySerializer(many=True, read_only=True)
+    reactions = UserSummarySerializer(many=True, read_only=True)
 
     class Meta:
         model = ThreadMessage
@@ -300,6 +313,7 @@ class ThreadMessageUpdateSerializer(serializers.ModelSerializer):
             'dislikes',
             'created_at',
             'updated_at',
+            'reactions',
         )
         read_only_fields = (
             'id',
@@ -313,6 +327,7 @@ class ThreadMessageUpdateSerializer(serializers.ModelSerializer):
             'dislikes',
             'created_at',
             'updated_at',
+            'reactions',
         )
 
 
@@ -320,6 +335,7 @@ class ThreadMessageReactionsSerializer(serializers.ModelSerializer):
     """Specific for viewing a thread's reactions"""
     likers = UserSummarySerializer(many=True, read_only=True)
     dislikers = UserSummarySerializer(many=True, read_only=True)
+    reactions = UserSummarySerializer(many=True, read_only=True)
 
     class Meta:
         model = ThreadMessage
@@ -329,6 +345,7 @@ class ThreadMessageReactionsSerializer(serializers.ModelSerializer):
             'dislikers',
             'likes',
             'dislikes',
+            'reactions',
         )
         read_only_fields = (
             'id',
@@ -336,6 +353,7 @@ class ThreadMessageReactionsSerializer(serializers.ModelSerializer):
             'dislikers',
             'likes',
             'dislikes',
+            'reactions',
         )
 
 
