@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from encrypted_model_fields.fields import EncryptedCharField
+from django.utils import timezone
 from .utils import extract_tags
 
 
@@ -12,6 +13,7 @@ class User(AbstractUser):
     email = models.EmailField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    token_updated_at = models.DateTimeField(default=timezone.now())
 
     def publish(self):
         self.save()
