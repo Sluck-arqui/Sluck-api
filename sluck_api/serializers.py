@@ -21,7 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'password',
             'email',
-            'token_updated_at',
             'created_at',
             'updated_at',
             'groups',
@@ -33,7 +32,6 @@ class UserSerializer(serializers.ModelSerializer):
             'disliked_threads',
         )
         read_only_fields = (
-            'token_updated_at',
             'created_at',
             'updated_at',
             'groups',
@@ -47,8 +45,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def save(self, *args, **kwargs):
         instance = super(UserSerializer, self).save(*args, **kwargs)
-        instance.token_updated_at = timezone.now()
-        instance.save()
         token = Token.objects.create(user=instance)
         return instance, token
 
@@ -58,8 +54,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def new_token(self):
         Token.objects.filter(user=self.instance).delete()
-        self.instance.token_updated_at = timezone.now()
-        self.instance.save()
         token = Token.objects.create(user=self.instance)
         return token
 

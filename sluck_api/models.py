@@ -13,7 +13,6 @@ class User(AbstractUser):
     email = models.EmailField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    token_updated_at = models.DateTimeField(default=timezone.now())
 
     def publish(self):
         self.save()
