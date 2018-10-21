@@ -10,5 +10,5 @@ STATUS_CODE_403 = {'status_text': 'Forbidden action'}
 STATUS_CODE_404 = {'status_text': 'Object not found'}
 STATUS_CODE_405 = {'status_text': 'Method not allowed'}
 
-REACTION_TYPES = {0: 'likes', 
-                  1: 'dislikes'}
+REACTION_TYPES = {1: 'likes', 
+                  2: 'dislikes'}

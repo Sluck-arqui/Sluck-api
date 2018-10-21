@@ -47,10 +47,18 @@ class Message(models.Model):
     )
     mentions = models.ManyToManyField(User, related_name='mentions')
     hashtags = models.ManyToManyField(Hashtag, related_name='messages')
-    likers = models.ManyToManyField(User, related_name='liked_messages')
-    dislikers = models.ManyToManyField(User, related_name='disliked_messages')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    reactions = models.ManyToManyField(User, through='MessageReaction',
+                                       related_name='reactions')
+
+    @property
+    def likers(self):
+        return self.reactions.extra(where=(['reaction_type=1']))
+
+    @property
+    def dislikers(self):
+        return self.reactions.extra(where=(['reaction_type=2']))
 
     @property
     def likes(self):
@@ -95,10 +103,18 @@ class ThreadMessage(models.Model):
     )
     mentions = models.ManyToManyField(User, related_name='thread_mentions')
     hashtags = models.ManyToManyField(Hashtag, related_name='thread_messages')
-    likers = models.ManyToManyField(User, related_name='liked_threads')
-    dislikers = models.ManyToManyField(User, related_name='disliked_threads')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    reactions = models.ManyToManyField(User, through='ThreadMessageReaction',
+                                       related_name='thread_messages')
+
+    @property
+    def likers(self):
+        return self.reactions.extra(where=(['reaction_type=1']))
+
+    @property
+    def dislikers(self):
+        return self.reactions.extra(where=(['reaction_type=2']))
 
     @property
     def likes(self):
@@ -127,3 +143,21 @@ class ThreadMessage(models.Model):
                 new_mentions.append(user[0])
         self.mentions.set(new_mentions)
         return self
+
+
+class MessageReaction(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    reaction_type = models.IntegerField()
+
+    def publish(self):
+        self.save()
+
+
+class ThreadMessageReaction(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    thread = models.ForeignKey(ThreadMessage, on_delete=models.CASCADE)
+    reaction_type = models.IntegerField()
+
+    def publish(self):
+        self.save()

@@ -83,6 +83,20 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'api',
+#         'USER': USER,
+#         'PASSWORD': PASSWORD,
+#         'HOST': 'charette10.ing.puc.cl',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         },
+#     }
+# }
+
 REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }

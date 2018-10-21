@@ -22,7 +22,11 @@ from rest_framework import viewsets
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from .models import Message, User, Group, Hashtag, ThreadMessage
+from .models import (
+    Message, User, Group,
+    Hashtag, ThreadMessage,
+    MessageReaction, ThreadMessageReaction,
+)
 import datetime
 import json
 
@@ -309,8 +313,21 @@ def post_message(request):
 
 
 @csrf_exempt
-def reaction_message(request):
-    if request.method == 'POST':
+def message_reactions(request):
+    if request.method == 'GET':
+        data = request.GET
+        message_id = data.get('message_id', None)
+        limit = data.get('limit', 50)
+        if message_id:
+            message = Message.objects.filter(id=message_id)
+            if message:
+                serializer = MessageReactionsSerializer(message[0])
+                return JsonResponse(serializer.data, safe=False, status=200)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    elif request.method == 'POST':
         data = JSONParser().parse(request)
         user_id = data.get('user_id', None)
         message_id = data.get('message_id', None)
@@ -322,27 +339,11 @@ def reaction_message(request):
                 if user[0] in message[0].reactions.all():
                     return JsonResponse(STATUS_CODE_403, status=403)
                 if user[0] not in message[0].reactions.all():
-                    message[0].reactions.add(user[0])
-                    serializer = ThreadMessageSerializer(message[0])
+                    react = MessageReaction(author=user[0], message=message[0],
+                                            reaction_type=reaction_type)
+                    react.publish()
+                    serializer = MessageSerializer(message[0])
                     return JsonResponse(serializer.data, status=201)
-            return JsonResponse(
-                STATUS_CODE_404, status=404)
-        return JsonResponse(
-            STATUS_CODE_400, status=400)
-    return JsonResponse(STATUS_CODE_405, status=405)
-
-
-@csrf_exempt
-def get_message_reactions(request):
-    if request.method == 'GET':
-        data = request.GET
-        message_id = data.get('message_id', None)
-        limit = data.get('limit', 50)
-        if message_id:
-            message = Message.objects.filter(id=message_id)
-            if message:
-                serializer = MessageReactionsSerializer(message[0])
-                return JsonResponse(serializer.data, safe=False, status=200)
             return JsonResponse(
                 STATUS_CODE_404, status=404)
         return JsonResponse(
@@ -409,8 +410,21 @@ def post_comment(request):
 
 
 @csrf_exempt
-def reaction_thread(request):
-    if request.method == 'POST':
+def thread_reactions(request):
+    if request.method == 'GET':
+        data = request.GET
+        thread_id = data.get('thread_id', None)
+        limit = data.get('limit', 50)
+        if thread_id:
+            thread = ThreadMessage.objects.filter(id=thread_id)
+            if thread:
+                serializer = ThreadMessageReactionsSerializer(thread[0])
+                return JsonResponse(serializer.data, safe=False, status=200)
+            return JsonResponse(
+                STATUS_CODE_404, status=404)
+        return JsonResponse(
+            STATUS_CODE_400, status=400)
+    elif request.method == 'POST':
         data = JSONParser().parse(request)
         user_id = data.get('user_id', None)
         thread_id = data.get('thread_id', None)
@@ -422,27 +436,12 @@ def reaction_thread(request):
                 if user[0] in thread[0].reactions.all():
                     return JsonResponse(STATUS_CODE_403, status=403)
                 if user[0] not in thread[0].reactions.all():
-                    thread[0].reactions.add(user[0])
-                    serializer = ThreadSerializer(thread[0])
+                    react = ThreadMessageReaction(author=user[0],
+                                                  thread=thread[0],
+                                                  reaction_type=reaction_type)
+                    react.publish()
+                    serializer = ThreadMessageSerializer(thread[0])
                     return JsonResponse(serializer.data, status=201)
-            return JsonResponse(
-                STATUS_CODE_404, status=404)
-        return JsonResponse(
-            STATUS_CODE_400, status=400)
-    return JsonResponse(STATUS_CODE_405, status=405)
-
-
-@csrf_exempt
-def get_thread_reactions(request):
-    if request.method == 'GET':
-        data = request.GET
-        thread_id = data.get('thread_id', None)
-        limit = data.get('limit', 50)
-        if thread_id:
-            thread = ThreadMessage.objects.filter(id=thread_id)
-            if thread:
-                serializer = ThreadMessageReactionsSerializer(thread[0])
-                return JsonResponse(serializer.data, safe=False, status=200)
             return JsonResponse(
                 STATUS_CODE_404, status=404)
         return JsonResponse(
