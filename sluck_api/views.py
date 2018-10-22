@@ -390,7 +390,7 @@ def post_message(request):
         if (timezone.now() - token.created).days <= 7:
             if request.method == 'POST':
                 data = JSONParser().parse(request)
-                user_id = data.get('user_id', None)
+                user_id = token.user_id
                 group_id = data.get('group_id', None)
                 text = data.get('text', None)
                 if user_id and group_id and text:
@@ -440,7 +440,7 @@ def message_reactions(request):
                     STATUS_CODE_400, status=400)
             elif request.method == 'POST':
                 data = JSONParser().parse(request)
-                user_id = data.get('user_id', None)
+                user_id = token.user_id
                 message_id = data.get('message_id', None)
                 react_type = data.get('reaction_type', None)
                 if user_id and message_id and reaction_type:
@@ -479,7 +479,7 @@ def post_comment(request):
         if (timezone.now() - token.created).days <= 7:
             if request.method == 'POST':
                 data = JSONParser().parse(request)
-                user_id = data.get('user_id', None)
+                user_id = token.user_id
                 message_id = data.get('message_id', None)
                 text = data.get('text', None)
                 if user_id and message_id and text:
@@ -562,7 +562,7 @@ def thread_reactions(request):
                     STATUS_CODE_400, status=400)
             elif request.method == 'POST':
                 data = JSONParser().parse(request)
-                user_id = data.get('user_id', None)
+                user_id = token.user_id
                 thread_id = data.get('thread_id', None)
                 react_type = data.get('reaction_type', None)
                 if user_id and thread_id and reaction_type:
