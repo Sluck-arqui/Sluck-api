@@ -26,10 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
             'groups',
             'messages',
             'mentions',
-            'liked_messages',
-            'liked_threads',
-            'disliked_messages',
-            'disliked_threads',
         )
         read_only_fields = (
             'created_at',
@@ -37,10 +33,6 @@ class UserSerializer(serializers.ModelSerializer):
             'groups',
             'messages',
             'mentions',
-            'liked_messages',
-            'liked_threads',
-            'disliked_messages',
-            'disliked_threads',
         )
 
     def save(self, *args, **kwargs):
@@ -74,10 +66,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'groups',
             'messages',
             'mentions',
-            'liked_messages',
-            'liked_threads',
-            'disliked_messages',
-            'disliked_threads',
         )
         read_only_fields = (
             'username',
@@ -88,10 +76,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'groups',
             'messages',
             'mentions',
-            'liked_messages',
-            'liked_threads',
-            'disliked_messages',
-            'disliked_threads',
         )
 
 
