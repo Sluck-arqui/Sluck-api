@@ -446,8 +446,7 @@ def message_reactions(request):
                 if user_id and message_id and reaction_type:
                     user = User.objects.filter(id=user_id)
                     message = Message.objects.filter(id=message_id)
-                    if user and message
-                    and react_type in REACTION_TYPES.keys():
+                    if user and message and react_type in REACTION_TYPES.keys():
                         if user[0] in message[0].reactions.all():
                             return JsonResponse(STATUS_CODE_403, status=403)
                         if user[0] not in message[0].reactions.all():
