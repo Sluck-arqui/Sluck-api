@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
+from django.utils import timezone
 from .models import (
     User,
     Group,
@@ -40,6 +42,20 @@ class UserSerializer(serializers.ModelSerializer):
             'disliked_messages',
             'disliked_threads',
         )
+
+    def save(self, *args, **kwargs):
+        instance = super(UserSerializer, self).save(*args, **kwargs)
+        token = Token.objects.create(user=instance)
+        return instance, token
+
+    def get_token(self):
+        token = Token.objects.get(user=self.instance)
+        return token
+
+    def new_token(self):
+        Token.objects.filter(user=self.instance).delete()
+        token = Token.objects.create(user=self.instance)
+        return token
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

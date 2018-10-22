@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^rest/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^register/$', views.register, name='register'),
+    url(r'^login/$', views.login, name='login'),
     url(r'^user/$', views.get_user, name='get_user'),
     url(r'^group/$', views.get_group, name='get_group'),
     url(r'^group/new/$', views.new_group, name='new_group'),

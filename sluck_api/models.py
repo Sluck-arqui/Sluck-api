@@ -1,9 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from encrypted_model_fields.fields import EncryptedCharField
+from django.utils import timezone
 from .utils import extract_tags
 
 
-class User(models.Model):
+class User(AbstractUser):
     username = models.TextField(unique=True)
     first_name = models.TextField()
     last_name = models.TextField()
@@ -20,7 +22,7 @@ class Group(models.Model):
 
     name = models.TextField()
     description = models.TextField()
-    members = models.ManyToManyField(User, related_name='groups')
+    members = models.ManyToManyField(User, related_name='g')
 
     def publish(self):
         self.save()

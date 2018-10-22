@@ -9,6 +9,7 @@ STATUS_CODE_400 = {'status_text': 'Bad request'}
 STATUS_CODE_403 = {'status_text': 'Forbidden action'}
 STATUS_CODE_404 = {'status_text': 'Object not found'}
 STATUS_CODE_405 = {'status_text': 'Method not allowed'}
+STATUS_CODE_498 = {'status_text': 'Invalid oauth_token'}
 
-REACTION_TYPES = {1: 'likes', 
+REACTION_TYPES = {1: 'likes',
                   2: 'dislikes'}
