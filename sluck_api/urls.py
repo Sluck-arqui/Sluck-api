@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.conf.urls import url, include
+from django.urls import path
 from rest_framework import routers
 from sluck_api import views
 
@@ -9,8 +11,6 @@ router.register(r'messages', views.MessageViewSet)
 router.register(r'thread_messages', views.ThreadMessageViewSet)
 router.register(r'hashtags', views.HashtagViewSet)
 
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^rest/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
@@ -28,3 +28,12 @@ urlpatterns = [
     url(r'^search/hashtag/$', views.search_hashtag, name='search_hashtag'),
     url(r'^search/username/$', views.search_username, name='search_username'),
 ]
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+
+    ] + urlpatterns
