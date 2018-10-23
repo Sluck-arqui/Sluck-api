@@ -25,7 +25,7 @@ SECRET_KEY = 't6i%pj^oq*euqpe8_4bau=s2*%&!c#2si^8$!xe*4388y%56=8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['146.155.13.183', '146.155.13.255', '127.0.0.1']
+ALLOWED_HOSTS = ['146.155.13.183', '146.155.13.255', '127.0.0.1', 'http://charette11.ing.puc.cl/']
 
 
 # Application definition
