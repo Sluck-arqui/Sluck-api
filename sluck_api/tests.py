@@ -3,6 +3,7 @@ from rest_framework.test import APIRequestFactory
 import sluck_api.views as views
 from unittest import skip, skipIf
 import json
+from rest_framework.authtoken.models import Token
 from .models import (
     User,
     Group,
@@ -46,11 +47,10 @@ class SessionTestCase(TestCase):
         response = view(request)
         parsed_response = json.loads(response.content)
         self.assertEqual(response.status_code, 201)
-
         created_user = UserSerializer(
-            User.objects.get(id=parsed_response['id'])).data
-        for key in data:
-            self.assertEqual(data[key], parsed_response[key])
+            User.objects.get(id=parsed_response['user']['id'])).data
+        for key in list(data.keys())[:-1]:
+            self.assertEqual(data[key], parsed_response['user'][key])
             self.assertEqual(data[key], created_user[key])
 
     def test_invalid_cant_register(self):
@@ -89,11 +89,12 @@ class UserTestCase(TestCase):
             email='mimail@uc.cl',
             password='password',
         )
+        self.token = Token.objects.create(user=self.user)
 
     def test_get_user(self):
         view = views.get_user
         data = {'user_id': self.user.id}
-        request = self.factory.get('/user/', data, format='json')
+        request = self.factory.get('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -120,7 +121,7 @@ class UserTestCase(TestCase):
             'email': 'nuevomail@mail.com',
             'password': 'contraseñanueva',
         }
-        request = self.factory.patch('/user/', data, format='json')
+        request = self.factory.patch('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -143,7 +144,7 @@ class UserTestCase(TestCase):
     def test_delete_user(self):
         view = views.get_user
         data = {'user_id': self.user.id}
-        request = self.factory.delete('/user/', data, format='json')
+        request = self.factory.delete('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -161,7 +162,7 @@ class UserTestCase(TestCase):
         expected_response = STATUS_CODE_404
 
         # GET
-        request = self.factory.get('/user/', data, format='json')
+        request = self.factory.get('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -169,7 +170,7 @@ class UserTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # PATCH
-        request = self.factory.patch('/user/', data, format='json')
+        request = self.factory.patch('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -177,7 +178,7 @@ class UserTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # DELETE
-        request = self.factory.delete('/user/', data, format='json')
+        request = self.factory.delete('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -193,7 +194,7 @@ class UserTestCase(TestCase):
             'email': 'mimail@uc.cl',
             'password': 'password',
         }
-        request = self.factory.post('/user/', data, format='json')
+        request = self.factory.post('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_405
@@ -448,7 +449,7 @@ class MessageTestCase(TestCase):
             author=self.user,
             group=self.group,
         ).publish()
-        self.liked_message.likers.add(self.user)
+        # self.liked_message.likers.add(self.user)
 
     def test_create_message(self):
         view = views.post_message
@@ -598,11 +599,11 @@ class MessageTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
     def test_react_to_message(self):
-        like_view = views.like_message
-        dislike_view = views.dislike_message
+        reaction_view = views.message_reactions
 
         # Like
-        data = {'message_id': self.message.id, 'user_id': self.user.id}
+        data = {'message_id': self.message.id, 'user_id': self.user.id,
+                'reaction_type': 1}
         expected_response = {
             'id': self.message.id,
             'author': self.user.id,
@@ -623,7 +624,7 @@ class MessageTestCase(TestCase):
             'threads': [],
         }
         request = self.factory.post('/message/like/', data, format='json')
-        response = like_view(request)
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
         # Check response and DB Data
@@ -637,7 +638,7 @@ class MessageTestCase(TestCase):
         # Can't Dislike
         data = {'message_id': self.message.id, 'user_id': self.user.id}
         request = self.factory.post('/message/dislike/', data, format='json')
-        response = dislike_view(request)
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_403
         self.assertEqual(response.status_code, 403)
@@ -662,7 +663,7 @@ class MessageTestCase(TestCase):
             'threads': [],
         }
         request = self.factory.post('/message/like/', data, format='json')
-        response = like_view(request)
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
         # Check response and DB Data
@@ -674,7 +675,8 @@ class MessageTestCase(TestCase):
             self.assertEqual(parsed_response[key], expected_response[key])
             self.assertEqual(db_data[key], expected_response[key])
         # Dislike
-        data = {'message_id': self.message.id, 'user_id': self.user.id}
+        data = {'message_id': self.message.id, 'user_id': self.user.id,
+                'reaction_type': 2}
         expected_response = {
             'id': self.message.id,
             'author': self.user.id,
@@ -695,7 +697,7 @@ class MessageTestCase(TestCase):
             'threads': [],
         }
         request = self.factory.post('/message/dislike/', data, format='json')
-        response = dislike_view(request)
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
         # Check response and DB Data
@@ -708,7 +710,7 @@ class MessageTestCase(TestCase):
             self.assertEqual(db_data[key], expected_response[key])
 
     def test_get_message_reactions(self):
-        view = views.get_message_reactions
+        view = views.message_reactions
         data = {'message_id': self.liked_message.id}
         request = self.factory.get('/message/reactions', data, format='json')
         response = view(request)
@@ -767,7 +769,7 @@ class ThreadMessageTestCase(TestCase):
             author=self.user,
             message=self.message,
         ).publish()
-        self.liked_thread.likers.add(self.user)
+        # self.liked_thread.likers.add(self.user)
 
     def test_create_thread(self):
         view = views.post_comment
@@ -917,11 +919,11 @@ class ThreadMessageTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
     def test_react_to_thread(self):
-        like_view = views.like_thread
-        dislike_view = views.dislike_thread
+        reaction_view = views.thread_reactions
 
         # Like
-        data = {'thread_id': self.thread.id, 'user_id': self.user.id}
+        data = {'thread_id': self.thread.id, 'user_id': self.user.id,
+                'reaction_type': 1}
         expected_response = {
             'id': self.thread.id,
             'author': self.user.id,
@@ -936,8 +938,8 @@ class ThreadMessageTestCase(TestCase):
             ],
             'dislikers': [],
         }
-        request = self.factory.post('/messages/comment/like/', data, format='json')
-        response = like_view(request)
+        request = self.factory.post('/messages/comment/reactions/', data, format='json')
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
         # Check response and DB Data
@@ -950,8 +952,8 @@ class ThreadMessageTestCase(TestCase):
             self.assertEqual(db_data[key], expected_response[key])
         # Can't Dislike
         data = {'thread_id': self.thread.id, 'user_id': self.user.id}
-        request = self.factory.post('/messages/comment/dislike/', data, format='json')
-        response = dislike_view(request)
+        request = self.factory.post('/messages/comment/reactions/', data, format='json')
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_403
         self.assertEqual(response.status_code, 403)
@@ -970,8 +972,8 @@ class ThreadMessageTestCase(TestCase):
             'likers': [],
             'dislikers': [],
         }
-        request = self.factory.post('/messages/comment/like/', data, format='json')
-        response = like_view(request)
+        request = self.factory.post('/messages/comment/reactions/', data, format='json')
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
         # Check response and DB Data
@@ -983,7 +985,8 @@ class ThreadMessageTestCase(TestCase):
             self.assertEqual(parsed_response[key], expected_response[key])
             self.assertEqual(db_data[key], expected_response[key])
         # Dislike
-        data = {'thread_id': self.thread.id, 'user_id': self.user.id}
+        data = {'thread_id': self.thread.id, 'user_id': self.user.id,
+                'reaction_type': 2}
         expected_response = {
             'id': self.thread.id,
             'author': self.user.id,
@@ -998,8 +1001,8 @@ class ThreadMessageTestCase(TestCase):
                 {'id': self.user.id, 'username': self.user.username},
             ],
         }
-        request = self.factory.post('/messages/comment/dislike/', data, format='json')
-        response = dislike_view(request)
+        request = self.factory.post('/messages/comment/reactions/', data, format='json')
+        response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
         # Check response and DB Data
@@ -1012,7 +1015,7 @@ class ThreadMessageTestCase(TestCase):
             self.assertEqual(db_data[key], expected_response[key])
 
     def test_get_thread_reactions(self):
-        view = views.get_thread_reactions
+        view = views.thread_reactions
         data = {'thread_id': self.liked_thread.id}
         request = self.factory.get('/message/comment/reactions', data, format='json')
         response = view(request)
