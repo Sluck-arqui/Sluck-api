@@ -458,9 +458,14 @@ def message_reactions(request):
                             return JsonResponse(serializer.data, status=201)
                     elif user and message and react_type == -1:
                         if user[0] in message[0].reactions.all():
-                            MessageReaction.objects.filter(author=user[0]).delete()
-                            serializer = MessageSerializer(message[0])
-                            return JsonResponse(serializer.data, status=200)
+                            reaction = MessageReaction.objects.filter(author=user[0])
+                            if reaction:
+                                reaction.delete()
+                                serializer = MessageSerializer(message[0])
+                                return JsonResponse(serializer.data, status=200)
+                            else:
+                                return JsonResponse(
+                                        STATUS_CODE_400, status=400)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
                 return JsonResponse(
@@ -585,9 +590,14 @@ def thread_reactions(request):
                             return JsonResponse(serializer.data, status=201)
                     elif user and thread_id and react_type == -1:
                         if user[0] in thread[0].reactions.all():
-                            ThreadMessageReaction.objects.filter(author=user[0]).delete()
-                            serializer = ThreadMessageSerializer(thread[0])
-                            return JsonResponse(serializer.data, status=200)
+                            reaction = ThreadMessageReaction.objects.filter(author=user[0])
+                            if reaction:
+                                reaction.delete()
+                                serializer = ThreadMessageSerializer(thread[0])
+                                return JsonResponse(serializer.data, status=200)
+                            else:
+                                return JsonResponse(
+                                        STATUS_CODE_400, status=400)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
                 return JsonResponse(
