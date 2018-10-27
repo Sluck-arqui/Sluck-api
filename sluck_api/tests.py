@@ -243,7 +243,7 @@ class GroupTestCase(TestCase):
             'name': 'otros cabros',
             'description': 'Grupo de otros cabros tela',
         }
-        request = self.factory.post('/group/new/', data, format='json',
+        request = self.factory.post('/group/', data, format='json',
                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
@@ -345,20 +345,6 @@ class GroupTestCase(TestCase):
         parsed_response = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(parsed_response, expected_response)
-
-    def test_post_is_not_allowed(self):
-        view = views.get_group
-        data = {
-            'name': 'cabros',
-            'description': 'Grupo de cabros',
-        }
-        request = self.factory.post('/group/', data, format='json',
-                                    HTTP_OAUTH_TOKEN=self.token)
-        response = view(request)
-        parsed_response = json.loads(response.content)
-        expected_response = STATUS_CODE_405
-        self.assertEqual(response.status_code, 405)
         self.assertEqual(parsed_response, expected_response)
 
     def test_group_member(self):
