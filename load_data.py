@@ -7,6 +7,8 @@ from sluck_api.models import (
     Hashtag,
     Message,
     ThreadMessage,
+    MessageReaction,
+    ThreadMessageReaction,
 )
 from faker import Faker
 
@@ -58,10 +60,12 @@ def load():
     for user in users:
         for _ in range(N_LIKES_PER_USER):
             message = random.choice(messages)
-            message.likers.add(user)
+            MessageReaction(author=user, message=message,
+                            reaction_type=1).save()
         for _ in range(N_DISLIKES_PER_USER):
             message = random.choice(messages)
-            message.dislikers.add(user)
+            MessageReaction(author=user, message=message,
+                            reaction_type=0).save()
         for _ in range(N_THREADS_PER_USER):
             message = random.choice(messages)
             thread = ThreadMessage.objects.create(
@@ -74,10 +78,12 @@ def load():
     for user in users:
         for _ in range(N_THREAD_LIKES_PER_USER):
             thread = random.choice(threads)
-            thread.likers.add(user)
+            ThreadMessageReaction(author=user, thread=thread,
+                                  reaction_type=1).save()
         for _ in range(N_THREAD_DISLIKES_PER_USER):
             thread = random.choice(threads)
-            thread.dislikers.add(user)
+            ThreadMessageReaction(author=user, thread=thread,
+                                  reaction_type=1).save()
 
 
 load()
