@@ -95,7 +95,8 @@ class UserTestCase(TestCase):
     def test_get_user(self):
         view = views.get_user
         data = {'user_id': self.user.id}
-        request = self.factory.get('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/user/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -122,7 +123,8 @@ class UserTestCase(TestCase):
             'email': 'nuevomail@mail.com',
             'password': 'contraseñanueva',
         }
-        request = self.factory.patch('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/user/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -145,7 +147,8 @@ class UserTestCase(TestCase):
     def test_delete_user(self):
         view = views.get_user
         data = {'user_id': self.user.id}
-        request = self.factory.delete('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/user/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -163,7 +166,8 @@ class UserTestCase(TestCase):
         expected_response = STATUS_CODE_404
 
         # GET
-        request = self.factory.get('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/user/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -171,7 +175,8 @@ class UserTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # PATCH
-        request = self.factory.patch('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/user/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -179,7 +184,8 @@ class UserTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # DELETE
-        request = self.factory.delete('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/user/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -195,7 +201,8 @@ class UserTestCase(TestCase):
             'email': 'mimail@uc.cl',
             'password': 'password',
         }
-        request = self.factory.post('/user/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/user/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_405
@@ -236,7 +243,8 @@ class GroupTestCase(TestCase):
             'name': 'otros cabros',
             'description': 'Grupo de otros cabros tela',
         }
-        request = self.factory.post('/group/new/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/group/new/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         self.assertEqual(response.status_code, 201)
@@ -250,7 +258,8 @@ class GroupTestCase(TestCase):
     def test_get_group(self):
         view = views.get_group
         data = {'group_id': self.group.id}
-        request = self.factory.get('/group/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/group/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -272,7 +281,8 @@ class GroupTestCase(TestCase):
             'name': 'alumnosdcc',
             'description': 'Grupo de alumnos del dcc',
         }
-        request = self.factory.patch('/group/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/group/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -292,7 +302,8 @@ class GroupTestCase(TestCase):
     def test_delete_group(self):
         view = views.get_group
         data = {'group_id': self.group.id}
-        request = self.factory.delete('/group/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/group/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -310,7 +321,8 @@ class GroupTestCase(TestCase):
         expected_response = STATUS_CODE_404
 
         # GET
-        request = self.factory.get('/group/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/group/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -318,7 +330,8 @@ class GroupTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # PATCH
-        request = self.factory.patch('/group/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/group/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -326,7 +339,8 @@ class GroupTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # DELETE
-        request = self.factory.delete('/group/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/group/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -339,7 +353,8 @@ class GroupTestCase(TestCase):
             'name': 'cabros',
             'description': 'Grupo de cabros',
         }
-        request = self.factory.post('/group/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/group/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_405
@@ -359,7 +374,8 @@ class GroupTestCase(TestCase):
             'description': self.group.description,
             'name': self.group.name,
         }
-        request = self.factory.post('/group/member/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/group/member/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -386,7 +402,8 @@ class GroupTestCase(TestCase):
             'description': self.group.description,
             'name': self.group.name,
         }
-        request = self.factory.post('/group/member/', data, format='json', HTTP_OAUTH_TOKEN=self.token2)
+        request = self.factory.post('/group/member/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token2)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -412,7 +429,8 @@ class GroupTestCase(TestCase):
             'description': self.group.description,
             'name': self.group.name,
         }
-        request = self.factory.delete('/group/member/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/group/member/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -465,7 +483,8 @@ class MessageTestCase(TestCase):
             'group_id': self.group.id,
             'text': 'Otro comentairio de #ejemplo',
         }
-        request = self.factory.post('/message/new/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/new/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = {
@@ -493,7 +512,8 @@ class MessageTestCase(TestCase):
     def test_get_message(self):
         view = views.get_message
         data = {'message_id': self.message.id}
-        request = self.factory.get('/message/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/message/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -524,7 +544,8 @@ class MessageTestCase(TestCase):
             'message_id': self.message.id,
             'text': 'mensaje editado!',
         }
-        request = self.factory.patch('/message/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/message/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = {
@@ -550,7 +571,8 @@ class MessageTestCase(TestCase):
     def test_delete_message(self):
         view = views.get_message
         data = {'message_id': self.message.id}
-        request = self.factory.delete('/message/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/message/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -568,7 +590,8 @@ class MessageTestCase(TestCase):
         expected_response = STATUS_CODE_404
 
         # GET
-        request = self.factory.get('/message/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/message/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -576,7 +599,8 @@ class MessageTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # PATCH
-        request = self.factory.patch('/message/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/message/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -584,7 +608,8 @@ class MessageTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # DELETE
-        request = self.factory.delete('/message/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/message/', data, format='json', 
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -598,7 +623,8 @@ class MessageTestCase(TestCase):
             'group_id': self.group.id,
             'text': 'Otro comentairio de #ejemplo',
         }
-        request = self.factory.post('/message/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_405
@@ -630,7 +656,8 @@ class MessageTestCase(TestCase):
             'dislikers': [],
             'threads': [],
         }
-        request = self.factory.post('/message/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/reactions/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
@@ -645,7 +672,8 @@ class MessageTestCase(TestCase):
         # Can't Dislike
         data = {'message_id': self.message.id, 'user_id': self.user.id,
                 'reaction_type': 2}
-        request = self.factory.post('/message/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/reactions/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_403
@@ -671,7 +699,8 @@ class MessageTestCase(TestCase):
             'dislikers': [],
             'threads': [],
         }
-        request = self.factory.post('/message/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/reactions/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
@@ -705,7 +734,8 @@ class MessageTestCase(TestCase):
             ],
             'threads': [],
         }
-        request = self.factory.post('/message/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/reactions/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
@@ -722,12 +752,14 @@ class MessageTestCase(TestCase):
         reaction_view = views.message_reactions
         data = {'message_id': self.message.id, 'user_id': self.user.id,
                 'reaction_type': 1}
-        request = self.factory.post('/message/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/reactions/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
 
         view = views.message_reactions
         data = {'message_id': self.message.id}
-        request = self.factory.get('/message/reactions', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/message/reactions', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -797,7 +829,8 @@ class ThreadMessageTestCase(TestCase):
             'message_id': self.message.id,
             'text': 'Esto es un comentario woohoo! #primerthread',
         }
-        request = self.factory.post('/message/comment/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/message/comment/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = {
@@ -824,7 +857,8 @@ class ThreadMessageTestCase(TestCase):
     def test_get_thread(self):
         view = views.get_thread
         data = {'thread_id': self.thread.id}
-        request = self.factory.get('/thread/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/thread/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -855,7 +889,8 @@ class ThreadMessageTestCase(TestCase):
             'thread_id': self.thread.id,
             'text': 'mensaje editado!',
         }
-        request = self.factory.patch('/message/comment/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/message/comment/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = {
@@ -880,7 +915,8 @@ class ThreadMessageTestCase(TestCase):
     def test_delete_thread(self):
         view = views.post_comment
         data = {'thread_id': self.thread.id}
-        request = self.factory.delete('/message/comment/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/message/comment/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -899,7 +935,8 @@ class ThreadMessageTestCase(TestCase):
         expected_response = STATUS_CODE_404
 
         # GET
-        # request = self.factory.get('/message/comment/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        # request = self.factory.get('/message/comment/', data, format='json',
+        #                            HTTP_OAUTH_TOKEN=self.token)
         # response = view(request)
         # parsed_response = json.loads(response.content)
 
@@ -907,7 +944,8 @@ class ThreadMessageTestCase(TestCase):
         # self.assertEqual(parsed_response, expected_response)
 
         # PATCH
-        request = self.factory.patch('/message/comment/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.patch('/message/comment/', data, format='json',
+                                     HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -915,7 +953,8 @@ class ThreadMessageTestCase(TestCase):
         self.assertEqual(parsed_response, expected_response)
 
         # DELETE
-        request = self.factory.delete('/message/comment/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.delete('/message/comment/', data, format='json',
+                                      HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -930,7 +969,8 @@ class ThreadMessageTestCase(TestCase):
             'group_id': self.group.id,
             'text': 'Otro comentairio de #ejemplo',
         }
-        request = self.factory.post('/thread/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/thread/', data, format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_400
@@ -957,7 +997,9 @@ class ThreadMessageTestCase(TestCase):
             ],
             'dislikers': [],
         }
-        request = self.factory.post('/messages/comment/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/messages/comment/reactions/', data,
+                                    format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
@@ -972,7 +1014,9 @@ class ThreadMessageTestCase(TestCase):
         # Can't Dislike
         data = {'thread_id': self.thread.id, 'user_id': self.user.id,
                 'reaction_type': 2}
-        request = self.factory.post('/messages/comment/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/messages/comment/reactions/', data,
+                                    format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
         expected_response = STATUS_CODE_403
@@ -993,7 +1037,9 @@ class ThreadMessageTestCase(TestCase):
             'likers': [],
             'dislikers': [],
         }
-        request = self.factory.post('/messages/comment/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/messages/comment/reactions/', data,
+                                    format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
@@ -1022,7 +1068,9 @@ class ThreadMessageTestCase(TestCase):
                 {'id': self.user.id, 'username': self.user.username},
             ],
         }
-        request = self.factory.post('/messages/comment/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/messages/comment/reactions/', data,
+                                    format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
         parsed_response = json.loads(response.content)
 
@@ -1039,12 +1087,16 @@ class ThreadMessageTestCase(TestCase):
         reaction_view = views.thread_reactions
         data = {'thread_id': self.thread.id, 'user_id': self.user.id,
                 'reaction_type': 1}
-        request = self.factory.post('/messages/comment/reactions/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.post('/messages/comment/reactions/', data,
+                                    format='json',
+                                    HTTP_OAUTH_TOKEN=self.token)
         response = reaction_view(request)
 
         view = views.thread_reactions
         data = {'thread_id': self.thread.id}
-        request = self.factory.get('/message/comment/reactions', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/message/comment/reactions', data,
+                                   format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
 
@@ -1108,7 +1160,8 @@ class SearchTestCase(TestCase):
         data = {
             'text': 'wena!',
         }
-        request = self.factory.get('/search/hashtag/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/search/hashtag/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
@@ -1163,7 +1216,8 @@ class SearchTestCase(TestCase):
             },
         ]
 
-        for expected_message, received_message in zip(expected_response, parsed_response):
+        for expected_message, received_message in zip(expected_response,
+                                                      parsed_response):
             for key in expected_message:
                 self.assertEqual(received_message[key], expected_message[key])
 
@@ -1172,7 +1226,8 @@ class SearchTestCase(TestCase):
         data = {
             'text': 'hashtag_inexistente',
         }
-        request = self.factory.get('/search/hashtag/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/search/hashtag/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
@@ -1186,7 +1241,8 @@ class SearchTestCase(TestCase):
         data = {
             'username': self.user.username,
         }
-        request = self.factory.get('/search/username/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/search/username/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
@@ -1241,7 +1297,8 @@ class SearchTestCase(TestCase):
             },
         ]
 
-        for expected_message, received_message in zip(expected_response, parsed_response):
+        for expected_message, received_message in zip(expected_response,
+                                                      parsed_response):
             for key in expected_message:
                 self.assertEqual(received_message[key], expected_message[key])
 
@@ -1250,7 +1307,8 @@ class SearchTestCase(TestCase):
         data = {
             'username': self.non_posting_user.username,
         }
-        request = self.factory.get('/search/username/', data, format='json', HTTP_OAUTH_TOKEN=self.token)
+        request = self.factory.get('/search/username/', data, format='json',
+                                   HTTP_OAUTH_TOKEN=self.token)
         response = view(request)
         parsed_response = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
