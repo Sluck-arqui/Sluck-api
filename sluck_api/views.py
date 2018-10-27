@@ -443,7 +443,7 @@ def message_reactions(request):
                 user_id = token.user_id
                 message_id = data.get('message_id', None)
                 react_type = data.get('reaction_type', None)
-                if user_id and message_id and reaction_type:
+                if user_id and message_id and react_type:
                     user = User.objects.filter(id=user_id)
                     message = Message.objects.filter(id=message_id)
                     if user and message and react_type in REACTION_TYPES.keys():
@@ -456,6 +456,11 @@ def message_reactions(request):
                             react.publish()
                             serializer = MessageSerializer(message[0])
                             return JsonResponse(serializer.data, status=201)
+                    elif user and message and react_type == -1:
+                        if user[0] in message[0].reactions.all():
+                            MessageReaction.objects.filter(author=user[0]).delete()
+                            serializer = MessageSerializer(message[0])
+                            return JsonResponse(serializer.data, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
                 return JsonResponse(
@@ -565,7 +570,7 @@ def thread_reactions(request):
                 user_id = token.user_id
                 thread_id = data.get('thread_id', None)
                 react_type = data.get('reaction_type', None)
-                if user_id and thread_id and reaction_type:
+                if user_id and thread_id and react_type:
                     user = User.objects.filter(id=user_id)
                     thread = ThreadMessage.objects.filter(id=thread_id)
                     if user and thread and react_type in REACTION_TYPES.keys():
@@ -578,6 +583,11 @@ def thread_reactions(request):
                             react.publish()
                             serializer = ThreadMessageSerializer(thread[0])
                             return JsonResponse(serializer.data, status=201)
+                    elif user and thread_id and react_type == -1:
+                        if user[0] in thread[0].reactions.all():
+                            ThreadMessageReaction.objects.filter(author=user[0]).delete()
+                            serializer = ThreadMessageSerializer(thread[0])
+                            return JsonResponse(serializer.data, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
                 return JsonResponse(
