@@ -18,7 +18,6 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     url(r'^user/$', views.get_user, name='get_user'),
     url(r'^group/$', views.get_group, name='get_group'),
-    url(r'^group/new/$', views.new_group, name='new_group'),
     url(r'^group/member/$', views.group_member, name='group_member'),
     url(r'^message/$', views.get_message, name='get_message'),
     url(r'^message/group/$', views.post_message, name='post_message'),

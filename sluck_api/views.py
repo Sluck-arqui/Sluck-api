@@ -201,6 +201,14 @@ def get_group(request):
                 return JsonResponse(
                     STATUS_CODE_400, status=400)
 
+            elif request.method == 'POST':
+                data = JSONParser().parse(request)
+                serializer = GroupSerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status=201)
+                return JsonResponse(serializer.errors, status=400)
+
             elif request.method == 'PATCH':
                 data = JSONParser().parse(request)
                 group_id = data.get('group_id', None)
