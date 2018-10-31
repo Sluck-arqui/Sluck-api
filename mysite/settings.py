@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'sluck_api',
     'encrypted_model_fields',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'load_data'
 ]
 
 MIDDLEWARE = [
