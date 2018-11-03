@@ -13,6 +13,7 @@ from .serializers import (
 from .utils import (
     STATUS_CODE_200_DELETE,
     STATUS_CODE_400,
+    STATUS_CODE_401,
     STATUS_CODE_403,
     STATUS_CODE_404,
     STATUS_CODE_405,
@@ -87,9 +88,9 @@ def register(request):
             data["oauth_token"] = str(token)
             keys = ['id', 'username', 'first_name', 'last_name', 'email', 'oauth_token', 'created_at', 'updated_at']
             data = {key: data[key] for key in keys}
-            final_data = {'satus_code': 201, 'user': data}
+            final_data = {'status_code': 201, 'user': data}
             return JsonResponse(final_data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+        return JsonResponse(STATUS_CODE_401, status=401)
     return JsonResponse(STATUS_CODE_405, status=405)
 
 
@@ -113,10 +114,10 @@ def login(request):
 
                     keys = ['id', 'username', 'first_name', 'last_name', 'email', 'oauth_token', 'created_at', 'updated_at']
                     data = {key: data[key] for key in keys}
-                    final_data = {'satus_code': 201, 'user': data}
+                    final_data = {'status_code': 201, 'user': data}
                     return JsonResponse(final_data, status=201)
-                return JsonResponse({'status_text': 'Incorrect Password or Username'}, status=400)
-            return JsonResponse({'status_text': 'Incorrect Password or Username'}, status=400)
+                return JsonResponse({'status_text': 'Incorrect Password or Username'}, status=401)
+            return JsonResponse({'status_text': 'Incorrect Password or Username'}, status=401)
         return JsonResponse(STATUS_CODE_400, status=400)
     return JsonResponse(STATUS_CODE_405, status=405)
 
