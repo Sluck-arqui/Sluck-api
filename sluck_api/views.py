@@ -439,8 +439,8 @@ def chat(request):
                 user1 = data.get('user1', None)
                 user2 = data.get('user2', None)
                 if user1 and user2:
-                    groups1 = User.objects.filter(id=user1).groups
-                    groups2 = User.objects.filter(id=user2).groups
+                    groups1 = User.objects.filter(id=user1)[0].groups
+                    groups2 = User.objects.filter(id=user2)[0].groups
                     groups = list(set(groups1) & set(groups2))
                     messages = Message.objects.filter(group__in=groups)
                     if messages:
