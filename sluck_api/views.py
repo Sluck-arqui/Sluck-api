@@ -453,7 +453,7 @@ def chat(request):
                             information['chats'].append(info)
                         return JsonResponse(information, safe=False, status=200)
                     return JsonResponse(
-                        STATUS_CODE_404, status=404)
+                        {'status_text': 'No chats'}, status=200)
                 return JsonResponse(
                     STATUS_CODE_400, status=400)
             return JsonResponse(STATUS_CODE_405, status=405)
