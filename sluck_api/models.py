@@ -22,7 +22,7 @@ class Group(models.Model):
 
     name = models.TextField()
     description = models.TextField()
-    members = models.ManyToManyField(User, related_name='g')
+    members = models.ManyToManyField(User, related_name='groups')
 
     def publish(self):
         self.save()

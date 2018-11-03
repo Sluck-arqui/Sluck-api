@@ -437,18 +437,20 @@ def chat(request):
         if (timezone.now() - token.created).days <= 7:
             if request.method == 'GET':
                 data = request.GET
-                user1 = data.get('user1', None)
-                user2 = data.get('user2', None)
-                if user1 and user2:
-                    groups1 = User.objects.filter(id=user1)[0].groups
-                    groups2 = User.objects.filter(id=user2)[0].groups
-                    groups = list(set(groups1) & set(groups2))
-                    messages = Message.objects.filter(group__in=groups)
-                    if messages:
-                        information = {'messages': []}
-                        for message in messages:
-                            serializer = MessageReactionsSerializer(message)
-                            information['messages'].append(serializer.data)
+                user_id = token.user_id
+                if user_id:
+                    user = User.objects.filter(id=user_id)[0]
+                    groups_ = user.groups.all()
+                    groups = [group for group in groups_
+                              if len(group.members.all()) == 2]
+                    if groups:
+                        information = {'chats': []}
+                        for group in groups:
+                            for member in group.members.all():
+                                if user.username != member.username:
+                                    name = member.username
+                            info = {'username': name, 'group_id': group.id}
+                            information['chats'].append(info)
                         return JsonResponse(information, safe=False, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
