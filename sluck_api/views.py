@@ -439,7 +439,7 @@ def chat(request):
                 user1 = data.get('user1', None)
                 user2 = data.get('user2', None)
                 if user1 and user2:
-                    message = Message.objects.filter(Q(author__id=user1) | Q(author__id=user2))
+                    message = Message.objects.filter(Q(author__id=user1) & Q(author__id=user2))
                     if message:
                         serializer = MessageReactionsSerializer(message[0])
                         return JsonResponse(serializer.data, safe=False, status=200)
