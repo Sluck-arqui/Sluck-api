@@ -440,7 +440,7 @@ def chat(request):
                 user_id = token.user_id
                 if user_id:
                     user = User.objects.filter(id=user_id)[0]
-                    groups_ = user.groups.all()
+                    groups_ = user.g.all()
                     groups = [group for group in groups_
                               if len(group.members.all()) == 2]
                     if groups:
