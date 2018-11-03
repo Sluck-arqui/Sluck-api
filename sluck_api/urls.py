@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^group/member/$', views.group_member, name='group_member'),
     url(r'^message/$', views.get_message, name='get_message'),
     url(r'^message/group/$', views.post_message, name='post_message'),
+    url(r'^message/chat/$', views.chat, name='chat'),
     url(r'^message/reactions/$', views.message_reactions, name='message_reactions'),
     url(r'^message/comment/$', views.post_comment, name='post_comment'),
     url(r'^message/comment/reactions/$', views.thread_reactions, name='thread_reactions'),

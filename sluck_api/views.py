@@ -32,6 +32,7 @@ import datetime
 from rest_framework.authtoken.models import Token
 from django.utils import timezone
 import json
+from django.db.models import Q
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -412,6 +413,36 @@ def post_message(request):
                         ).publish()
                         serializer = MessageSerializer(message)
                         return JsonResponse(serializer.data, status=201)
+                    return JsonResponse(
+                        STATUS_CODE_404, status=404)
+                return JsonResponse(
+                    STATUS_CODE_400, status=400)
+            return JsonResponse(STATUS_CODE_405, status=405)
+
+        else:
+            return JsonResponse(STATUS_CODE_498, status=498)
+
+    except KeyError:
+        return JsonResponse(STATUS_CODE_498, status=498)
+
+    except Token.DoesNotExist:
+        return JsonResponse(STATUS_CODE_498, status=498)
+
+
+@csrf_exempt
+def chat(request):
+    try:
+        token = Token.objects.get(key=request.META['HTTP_OAUTH_TOKEN'])
+        if (timezone.now() - token.created).days <= 7:
+            if request.method == 'GET':
+                data = request.GET
+                user1 = data.get('user1', None)
+                user2 = data.get('user2', None)
+                if user1 and user2:
+                    message = Message.objects.filter(Q(author__id=user1) | Q(author__id=user2))
+                    if message:
+                        serializer = MessageReactionsSerializer(message[0])
+                        return JsonResponse(serializer.data, safe=False, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
                 return JsonResponse(
