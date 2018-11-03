@@ -439,10 +439,16 @@ def chat(request):
                 user1 = data.get('user1', None)
                 user2 = data.get('user2', None)
                 if user1 and user2:
-                    message = Message.objects.filter(Q(author__id=user1) & Q(author__id=user2))
-                    if message:
-                        serializer = MessageReactionsSerializer(message[0])
-                        return JsonResponse(serializer.data, safe=False, status=200)
+                    groups1 = User.objects.filter(id=user1).groups
+                    groups2 = User.objects.filter(id=user2).groups
+                    groups = list(set(groups1) & set(groups2))
+                    messages = Message.objects.filter(group__in=groups)
+                    if messages:
+                        information = {'messages': []}
+                        for message in messages:
+                            serializer = MessageReactionsSerializer(message)
+                            information['messages'].append(serializer.data)
+                        return JsonResponse(information, safe=False, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
                 return JsonResponse(
