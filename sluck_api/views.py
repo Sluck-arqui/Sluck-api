@@ -79,7 +79,10 @@ class ThreadMessageViewSet(viewsets.ModelViewSet):
 # User Views
 @csrf_exempt
 def register(request):
+    print('Entre')
+    print(request.method)
     if request.method == 'POST':
+        print('Entre2')
         data = JSONParser().parse(request)
         print(1)
         print(data)
@@ -96,6 +99,8 @@ def register(request):
             print(data)
             keys = ['id', 'username', 'first_name', 'last_name', 'email', 'oauth_token', 'created_at', 'updated_at']
             data = {key: data[key] for key in keys}
+            print(5)
+            print(data)
             final_data = {'status_code': 201, 'user': data}
             return JsonResponse(final_data, status=201)
         return JsonResponse(STATUS_CODE_401, status=401)
