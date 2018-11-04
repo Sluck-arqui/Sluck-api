@@ -81,10 +81,7 @@ class ThreadMessageViewSet(viewsets.ModelViewSet):
 def register(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
-        try:
-            serializer = UserSerializer(data=data)
-        except:
-            return JsonResponse(STATUS_CODE_400, status=400)
+        serializer = UserSerializer(data=data)
         if serializer.is_valid():
             instance, token = serializer.save()
             data = serializer.data
