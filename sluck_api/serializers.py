@@ -78,6 +78,20 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'mentions',
         )
 
+class UserSecureSerializer(serializers.ModelSerializer):
+    """Update only User serializer, allows only change of email and password"""
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'groups',
+            'messages',
+            'mentions',
+        )
+
 
 class UserSummarySerializer(serializers.ModelSerializer):
     """Summarized version for showing User Objects Within Other Objects"""
