@@ -749,3 +749,36 @@ def search_username(request):
 
     except Token.DoesNotExist:
         return JsonResponse(STATUS_CODE_498, status=498)
+
+
+@csrf_exempt
+def search_group(request):
+    try:
+        token = Token.objects.get(key=request.META['HTTP_OAUTH_TOKEN'])
+        if (timezone.now() - token.created).days <= 7:
+            if request.method == 'GET':
+                data = request.GET
+                group_name = data.get('name', None)
+                print(group_name)
+                if group_name:
+                    groups = Group.objects.filter(name=group_name)
+                    print(groups)
+                    if groups:
+                        information = []
+                        for group in groups:
+                            serializer = GroupSerializer(group)
+                            information.append(serializer.data)
+                        return JsonResponse(information, safe=False, status=200)
+                    return JsonResponse([], safe=False, status=200)
+                return JsonResponse(
+                    STATUS_CODE_400, status=400)
+            return JsonResponse(STATUS_CODE_405, status=405)
+
+        else:
+            return JsonResponse(STATUS_CODE_498, status=498)
+
+    except KeyError:
+        return JsonResponse(STATUS_CODE_498, status=498)
+
+    except Token.DoesNotExist:
+        return JsonResponse(STATUS_CODE_498, status=498)

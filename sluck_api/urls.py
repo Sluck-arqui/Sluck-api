@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^user/groups/$', views.user_groups, name='user_groups'),
     url(r'^group/$', views.get_group, name='get_group'),
     url(r'^group/member/$', views.group_member, name='group_member'),
+    url(r'^groups/search/$', views.search_group, name='group_search'),
     url(r'^message/$', views.get_message, name='get_message'),
     url(r'^message/group/$', views.post_message, name='post_message'),
     url(r'^message/chat/$', views.chat, name='chat'),
