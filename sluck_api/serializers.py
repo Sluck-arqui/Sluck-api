@@ -92,6 +92,15 @@ class UserSecureSerializer(serializers.ModelSerializer):
             'messages',
             'mentions',
         )
+        read_only_fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'groups',
+            'messages',
+            'mentions',
+        )
 
 
 class UserSummarySerializer(serializers.ModelSerializer):
