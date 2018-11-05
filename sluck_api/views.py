@@ -134,7 +134,7 @@ def get_user(request):
                 if user_id:
                     user = User.objects.filter(id=user_id)
                     if user:
-                        serializer = UserSerializer(user[0])
+                        serializer = UserSecureSerializer(user[0])
                         return JsonResponse(serializer.data, safe=False, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
