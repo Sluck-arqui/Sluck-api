@@ -41,7 +41,7 @@ class UserViewSet(viewsets.ModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserUpdateSerializer
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -65,7 +65,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     API endpoint that allows messages to be viewed or edited.
     """
     queryset = Message.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = MessageSerializer
 
 
 class ThreadMessageViewSet(viewsets.ModelViewSet):
@@ -73,7 +73,7 @@ class ThreadMessageViewSet(viewsets.ModelViewSet):
     API endpoint that allows threads to be viewed or edited.
     """
     queryset = ThreadMessage.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = ThreadMessageSerializer
 
 
 # User Views
