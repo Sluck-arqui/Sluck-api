@@ -761,7 +761,7 @@ def search_group(request):
                 group_name = data.get('name', None)
                 print(group_name)
                 if group_name:
-                    groups = Group.objects.filter(name=group_name)
+                    groups = Group.objects.filter(name__icontains=group_name)
                     print(groups)
                     if groups:
                         information = []
