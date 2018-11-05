@@ -330,6 +330,35 @@ def group_member(request):
     except Token.DoesNotExist:
         return JsonResponse(STATUS_CODE_498, status=498)
 
+@csrf_exempt
+def user_groups(request):
+    try:
+        token = Token.objects.get(key=request.META['HTTP_OAUTH_TOKEN'])
+        if (timezone.now() - token.created).days <= 7:
+            if request.method == 'GET':
+                data = request.GET
+                user_id = token.user_id
+                if user_id:
+                    user = User.objects.filter(id=user_id)[0]
+                    groups_ = user.g.all()
+                    groups = [group.id for group in groups_]
+                    if groups:
+                        information = {'groups': groups}
+                        return JsonResponse(information, safe=False, status=200)
+                    return JsonResponse(
+                        {'status_text': 'No groups'}, status=200)
+                return JsonResponse(
+                    STATUS_CODE_400, status=400)
+            return JsonResponse(STATUS_CODE_405, status=405)
+
+        else:
+            return JsonResponse(STATUS_CODE_498, status=498)
+
+    except KeyError:
+        return JsonResponse(STATUS_CODE_498, status=498)
+
+    except Token.DoesNotExist:
+        return JsonResponse(STATUS_CODE_498, status=498)
 
 # Message Views
 @csrf_exempt
