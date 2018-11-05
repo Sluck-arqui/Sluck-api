@@ -9,6 +9,7 @@ from .serializers import (
     ThreadMessageSerializer,
     ThreadMessageUpdateSerializer,
     ThreadMessageReactionsSerializer,
+    UserSecureSerializer,
 )
 from .utils import (
     STATUS_CODE_200_DELETE,
@@ -41,7 +42,7 @@ class UserViewSet(viewsets.ModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     queryset = User.objects.all()
-    serializer_class = UserUpdateSerializer
+    serializer_class = UserSecureSerializer
 
 
 class GroupViewSet(viewsets.ModelViewSet):

@@ -78,6 +78,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'mentions',
         )
 
+
 class UserSecureSerializer(serializers.ModelSerializer):
     """Update only User serializer, allows only change of email and password"""
     class Meta:
