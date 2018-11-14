@@ -701,8 +701,7 @@ def search_hashtag(request):
                 hashtag_text = data.get('text', None)
                 limit = data.get('limit', 50)
                 if hashtag_text:
-                    hashtag = Hashtag.objects.filter(text=hashtag_text)
-                    messages = Message.objects.filter(hashtags__text=hashtag_text)
+                    messages = Message.objects.filter(hashtags__text__icontains=hashtag_text)
                     if messages:
                         serializer = MessageSerializer(messages, many=True)
                         return JsonResponse(serializer.data, safe=False, status=200)
@@ -731,7 +730,8 @@ def search_username(request):
                 username = data.get('username', None)
                 limit = data.get('limit', 50)
                 if username:
-                    user = User.objects.filter(username=username)
+                    user = User.objects.filter(username__icontains=username)
+                    # entrega solo el primer usuario usuario
                     if user:
                         messages = user[0].messages.all()
                         serializer = MessageSerializer(messages, many=True)
@@ -759,10 +759,8 @@ def search_group(request):
             if request.method == 'GET':
                 data = request.GET
                 group_name = data.get('name', None)
-                print(group_name)
                 if group_name:
                     groups = Group.objects.filter(name__icontains=group_name)
-                    print(groups)
                     if groups:
                         information = []
                         for group in groups:
