@@ -192,7 +192,7 @@ def get_group(request):
         token = Token.objects.get(key=request.META['HTTP_OAUTH_TOKEN'])
         if (timezone.now() - token.created).days <= 7:
             if request.method == 'GET':
-                data = JSONParser().parse(request)
+                data = request.GET
                 group_id = data.get('group_id', None)
                 if group_id:
                     group = Group.objects.get(id=group_id)

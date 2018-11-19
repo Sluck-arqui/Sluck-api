@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 't6i%pj^oq*euqpe8_4bau=s2*%&!c#2si^8$!xe*4388y%56=8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # TODO: change this
+DEBUG = False
 
 ALLOWED_HOSTS = ['146.155.13.183', '146.155.13.255', '127.0.0.1',
                  'http://charette11.ing.puc.cl/']
@@ -80,23 +80,23 @@ AUTH_USER_MODEL = 'sluck_api.User'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'api',
-#        'USER': os.environ.get('POSTGRESQL_USER'),
-#        'PASSWORD': os.environ.get('POSTGRESQL_PASS'),
-#        'HOST': 'charette10.ing.puc.cl',
-#        'PORT': '5432',
-#    }
-#}
+DATABASES = {
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'api',
+       'USER': os.environ.get('POSTGRESQL_USER'),
+       'PASSWORD': os.environ.get('POSTGRESQL_PASS'),
+       'HOST': 'charette10.ing.puc.cl',
+       'PORT': '5432',
+   }
+}
 
 REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
