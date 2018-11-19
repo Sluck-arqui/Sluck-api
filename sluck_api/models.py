@@ -23,6 +23,16 @@ class Group(models.Model):
     name = models.TextField()
     description = models.TextField()
     members = models.ManyToManyField(User, related_name='g')
+    notifications = models.ManyToManyField(User, through='Notification')
+
+    def publish(self):
+        self.save()
+
+
+class Notification(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    last_seen = models.DateTimeField(auto_now_add=True)
 
     def publish(self):
         self.save()
