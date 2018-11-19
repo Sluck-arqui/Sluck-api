@@ -120,6 +120,11 @@ class UserSummarySerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     """General usage Group Serializer"""
     members = UserSummarySerializer(many=True, read_only=True)
+    unread = serializers.SerializerMethodField('unread_counter')
+
+    def unread_counter(self, group):
+        return self.context['unread']
+
 
     class Meta:
         model = Group
@@ -128,9 +133,12 @@ class GroupSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'members',
+            'unread',
             'messages',
         )
         read_only_fields = ('id', 'members', 'messages')
+
+
         # extra_kwargs = {
         #     'security_question': {'write_only': True},
         #     'security_question_answer': {'write_only': True},

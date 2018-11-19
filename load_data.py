@@ -42,7 +42,7 @@ def load():
             username=f"{first_name}{i}",
             first_name=first_name,
             last_name=fake.last_name(),
-            password="password",
+            password="password", # TODO: change back this
             email=fake.email()
         )
         user.save()

@@ -88,14 +88,14 @@ AUTH_USER_MODEL = 'sluck_api.User'
 # }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'api',
-        'USER': os.environ.get('POSTGRESQL_USER'),
-        'PASSWORD': os.environ.get('POSTGRESQL_PASS'),
-        'HOST': 'charette10.ing.puc.cl',
-        'PORT': '5432',
-    }
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'api',
+       'USER': os.environ.get('POSTGRESQL_USER'),
+       'PASSWORD': os.environ.get('POSTGRESQL_PASS'),
+       'HOST': 'charette10.ing.puc.cl',
+       'PORT': '5432',
+   }
 }
 
 REST_FRAMEWORK = {

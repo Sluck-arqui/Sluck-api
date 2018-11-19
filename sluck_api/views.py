@@ -26,7 +26,7 @@ from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from .models import (
-    Message, User, Group,
+    Message, User, Group, Notification,
     Hashtag, ThreadMessage,
     MessageReaction, ThreadMessageReaction,
 )
@@ -195,9 +195,18 @@ def get_group(request):
                 data = request.GET
                 group_id = data.get('group_id', None)
                 if group_id:
-                    group = Group.objects.filter(id=group_id)
-                    if group:
-                        serializer = GroupSerializer(group[0])
+                    group = Group.objects.get(id=group_id)
+                    user = User.objects.get(id=token.user_id)
+                    if group and user:
+                        if (Notification.objects.filter(user_id=token.user_id, group_id=group_id).exists()):
+                            notification = Notification.objects.get(user_id=token.user_id, group_id=group_id)
+                            unread = len(group.messages.filter(updated_at__gte=notification.last_seen))
+                            notification.last_seen = timezone.now()
+                        else:
+                            unread = 0
+                            notification = Notification(user=user, group=group)
+                        notification.save()
+                        serializer = GroupSerializer(group, context={'unread': unread})
                         return JsonResponse(serializer.data, safe=False, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
@@ -288,7 +297,9 @@ def group_member(request):
             if request.method == 'POST':
                 data = JSONParser().parse(request)
                 user_id = data.get('user_id', None)
-                group_id = data.get('group_id', None)
+                group_id = data.get('id_group', None)
+                print(user_id)
+                print(group_id)
                 if user_id and group_id:
                     user = User.objects.filter(id=user_id)
                     group = Group.objects.filter(id=group_id)
