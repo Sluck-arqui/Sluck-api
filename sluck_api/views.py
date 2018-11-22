@@ -297,7 +297,7 @@ def group_member(request):
             if request.method == 'POST':
                 data = JSONParser().parse(request)
                 user_id = data.get('user_id', None)
-                group_id = data.get('id_group', None)
+                group_id = data.get('group_id', None)
                 print(user_id)
                 print(group_id)
                 if user_id and group_id:
