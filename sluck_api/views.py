@@ -202,13 +202,13 @@ def get_group(request):
                     if group and user:
                         if (Notification.objects.filter(user_id=token.user_id, group_id=group_id).exists()):
                             notification = Notification.objects.get(user_id=token.user_id, group_id=group_id)
-                            unread = len(group.messages.filter(updated_at__gte=notification.last_seen))
+                            unread_notifications = len(group.messages.filter(updated_at__gte=notification.last_seen))
                             notification.last_seen = timezone.now()
                         else:
-                            unread = 0
+                            unread_notifications = 0
                             notification = Notification(user=user, group=group)
                         notification.save()
-                        serializer = GroupSerializer(group, context={'unread': unread})
+                        serializer = GroupSerializer(group, context={'notification': unread_notifications})
                         return JsonResponse(serializer.data, safe=False, status=200)
                     return JsonResponse(
                         STATUS_CODE_404, status=404)
@@ -217,11 +217,11 @@ def get_group(request):
 
             elif request.method == 'POST':
                 data = JSONParser().parse(request)
-                serializer = GroupSerializer(data=data, context={'unread': 0})
+                serializer = GroupSerializer(data=data, context={'notification': 0})
                 if serializer.is_valid():
                     serializer.save()
                     group = Group.objects.filter(name=data['name'])[0]
-                    final_data = {'group': GroupSummarySerializer(group, context={'unread': 0}).data}
+                    final_data = {'group': GroupSummarySerializer(group, context={'notification': 0}).data}
                     return JsonResponse(final_data, status=201)
                 return JsonResponse(serializer.errors, status=400)
 
@@ -356,8 +356,8 @@ def user_groups(request):
                 if user_id:
                     user = User.objects.filter(id=user_id)[0]
                     groups_ = user.g.all()
-                    groups = [GroupSummarySerializer(group, 
-                              context={'unread': get_unread_number(user_id, group)}).data for group in groups_]
+                    groups = [GroupSummarySerializer(group,
+                              context={'notification': get_unread_number(user_id, group)}).data for group in groups_]
                     if groups:
                         information = {'groups': groups}
                         return JsonResponse(information, safe=False, status=200)
@@ -810,8 +810,8 @@ def search_group(request):
                     if groups:
                         information = []
                         for group in groups:
-                            unread = get_unread_number(token.user_id, group)
-                            serializer = GroupSummarySerializer(group, context={'unread': unread})
+                            unread_notifications = get_unread_number(token.user_id, group)
+                            serializer = GroupSummarySerializer(group, context={'notification': unread_notifications})
                             information.append(serializer.data)
                         return JsonResponse(information, safe=False, status=200)
                     return JsonResponse([], safe=False, status=200)

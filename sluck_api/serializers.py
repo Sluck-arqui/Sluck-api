@@ -120,10 +120,10 @@ class UserSummarySerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     """General usage Group Serializer"""
     members = UserSummarySerializer(many=True, read_only=True)
-    unread = serializers.SerializerMethodField('unread_counter')
+    notification = serializers.SerializerMethodField('unread_notification_counter')
 
-    def unread_counter(self, group):
-        return self.context['unread']
+    def unread_notification_counter(self, group):
+        return self.context['notification']
 
 
     class Meta:
@@ -133,10 +133,10 @@ class GroupSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'members',
-            'unread',
+            'notification',
             'messages',
         )
-        read_only_fields = ('id', 'members', 'messages', 'unread')
+        read_only_fields = ('id', 'members', 'messages', 'notification')
 
 
         # extra_kwargs = {
@@ -147,10 +147,10 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class GroupSummarySerializer(serializers.ModelSerializer):
-    unread = serializers.SerializerMethodField('unread_counter')
+    notification = serializers.SerializerMethodField('unread_notification_counter')
 
-    def unread_counter(self, group):
-        return self.context['unread']
+    def unread_notification_counter(self, group):
+        return self.context['notification']
 
 
     class Meta:
@@ -158,9 +158,9 @@ class GroupSummarySerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'unread',
+            'notification',
         )
-        read_only_fields = ('id', 'unread')
+        read_only_fields = ('id', 'notification')
 
 
 class HashtagSerializer(serializers.ModelSerializer):
