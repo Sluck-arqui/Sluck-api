@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^user/groups/$', views.user_groups, name='user_groups'),
     url(r'^group/$', views.get_group, name='get_group'),
     url(r'^group/member/$', views.group_member, name='group_member'),
-    url(r'^groups/search/$', views.search_group, name='group_search'),
+    url(r'^search/groups/$', views.search_group, name='group_search'),
     url(r'^message/$', views.get_message, name='get_message'),
     url(r'^message/group/$', views.post_message, name='post_message'),
     url(r'^message/chat/$', views.chat, name='chat'),
@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^message/comment/$', views.post_comment, name='post_comment'),
     url(r'^message/comment/reactions/$', views.thread_reactions, name='thread_reactions'),
     url(r'^search/hashtag/$', views.search_hashtag, name='search_hashtag'),
-    url(r'^search/username/$', views.search_username, name='search_username'),
+    url(r'^search/messages/username/$', views.search_messages_by_username, name='search_messages_by_username'),
+    url(r'^search/username/$', views.search_users_by_username, name='search_username'),
 ]

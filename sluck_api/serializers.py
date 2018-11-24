@@ -136,7 +136,7 @@ class GroupSerializer(serializers.ModelSerializer):
             'unread',
             'messages',
         )
-        read_only_fields = ('id', 'members', 'messages')
+        read_only_fields = ('id', 'members', 'messages', 'unread')
 
 
         # extra_kwargs = {
@@ -160,7 +160,7 @@ class GroupSummarySerializer(serializers.ModelSerializer):
             'name',
             'unread',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'unread')
 
 
 class HashtagSerializer(serializers.ModelSerializer):

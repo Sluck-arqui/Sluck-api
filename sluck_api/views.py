@@ -11,6 +11,7 @@ from .serializers import (
     ThreadMessageUpdateSerializer,
     ThreadMessageReactionsSerializer,
     UserSecureSerializer,
+    UserSummarySerializer,
 )
 from .utils import (
     STATUS_CODE_200_DELETE,
@@ -219,7 +220,9 @@ def get_group(request):
                 serializer = GroupSerializer(data=data)
                 if serializer.is_valid():
                     serializer.save()
-                    return JsonResponse(serializer.data, status=201)
+                    group = Group.objects.filter(name=data['name'])[0]
+                    final_data = {'group': GroupSummarySerializer(group).data}
+                    return JsonResponse(final_data, status=201)
                 return JsonResponse(serializer.errors, status=400)
 
             elif request.method == 'PATCH':
@@ -733,7 +736,7 @@ def search_hashtag(request):
 
 
 @csrf_exempt
-def search_username(request):
+def search_messages_by_username(request):
     try:
         token = Token.objects.get(key=request.META['HTTP_OAUTH_TOKEN'])
         if (timezone.now() - token.created).days <= 7:
@@ -762,6 +765,36 @@ def search_username(request):
     except Token.DoesNotExist:
         return JsonResponse(STATUS_CODE_498, status=498)
 
+@csrf_exempt
+def search_users_by_username(request):
+    try:
+        token = Token.objects.get(key=request.META['HTTP_OAUTH_TOKEN'])
+        if (timezone.now() - token.created).days <= 7:
+            if request.method == 'GET':
+                data = request.GET
+                username = data.get('username', None)
+                if username:
+                    users = User.objects.filter(username__icontains=username)
+                    if users:
+                        information = {'users': []}
+                        for user in users:
+                            serializer = UserSummarySerializer(user)
+                            information['users'].append(serializer.data)
+                        return JsonResponse(information, safe=False, status=200)
+                    return JsonResponse([], safe=False, status=200)
+                return JsonResponse(
+                    STATUS_CODE_400, status=400)
+            return JsonResponse(STATUS_CODE_405, status=405)
+
+        else:
+            return JsonResponse(STATUS_CODE_498, status=498)
+
+    except KeyError:
+        return JsonResponse(STATUS_CODE_498, status=498)
+
+    except Token.DoesNotExist:
+        return JsonResponse(STATUS_CODE_498, status=498)
+
 
 @csrf_exempt
 def search_group(request):
@@ -776,7 +809,7 @@ def search_group(request):
                     if groups:
                         information = []
                         for group in groups:
-                            serializer = GroupSerializer(group)
+                            serializer = GroupSummarySerializer(group)
                             information.append(serializer.data)
                         return JsonResponse(information, safe=False, status=200)
                     return JsonResponse([], safe=False, status=200)
