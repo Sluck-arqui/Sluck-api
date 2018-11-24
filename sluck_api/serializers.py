@@ -146,6 +146,23 @@ class GroupSerializer(serializers.ModelSerializer):
         # }
 
 
+class GroupSummarySerializer(serializers.ModelSerializer):
+    unread = serializers.SerializerMethodField('unread_counter')
+
+    def unread_counter(self, group):
+        return self.context['unread']
+
+
+    class Meta:
+        model = Group
+        fields = (
+            'id',
+            'name',
+            'unread',
+        )
+        read_only_fields = ('id',)
+
+
 class HashtagSerializer(serializers.ModelSerializer):
     """General usage Hashtag Serializer"""
     class Meta:

@@ -2,6 +2,7 @@ from .serializers import (
     UserSerializer,
     UserUpdateSerializer,
     GroupSerializer,
+    GroupSummarySerializer,
     HashtagSerializer,
     MessageSerializer,
     MessageUpdateSerializer,
@@ -352,7 +353,7 @@ def user_groups(request):
                 if user_id:
                     user = User.objects.filter(id=user_id)[0]
                     groups_ = user.g.all()
-                    groups = [group.id for group in groups_]
+                    groups = [GroupSummarySerializer(group).data for group in groups_]
                     if groups:
                         information = {'groups': groups}
                         return JsonResponse(information, safe=False, status=200)
