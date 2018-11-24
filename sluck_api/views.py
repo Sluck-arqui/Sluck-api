@@ -217,11 +217,11 @@ def get_group(request):
 
             elif request.method == 'POST':
                 data = JSONParser().parse(request)
-                serializer = GroupSerializer(data=data)
+                serializer = GroupSerializer(data=data, context={'unread': 0})
                 if serializer.is_valid():
                     serializer.save()
                     group = Group.objects.filter(name=data['name'])[0]
-                    final_data = {'group': GroupSummarySerializer(group).data}
+                    final_data = {'group': GroupSummarySerializer(group, context={'unread': 0}).data}
                     return JsonResponse(final_data, status=201)
                 return JsonResponse(serializer.errors, status=400)
 
@@ -356,7 +356,8 @@ def user_groups(request):
                 if user_id:
                     user = User.objects.filter(id=user_id)[0]
                     groups_ = user.g.all()
-                    groups = [GroupSummarySerializer(group).data for group in groups_]
+                    groups = [GroupSummarySerializer(group, 
+                              context={'unread': get_unread_number(user_id, group)}).data for group in groups_]
                     if groups:
                         information = {'groups': groups}
                         return JsonResponse(information, safe=False, status=200)
@@ -809,7 +810,8 @@ def search_group(request):
                     if groups:
                         information = []
                         for group in groups:
-                            serializer = GroupSummarySerializer(group)
+                            unread = get_unread_number(token.user_id, group)
+                            serializer = GroupSummarySerializer(group, context={'unread': unread})
                             information.append(serializer.data)
                         return JsonResponse(information, safe=False, status=200)
                     return JsonResponse([], safe=False, status=200)
@@ -825,3 +827,13 @@ def search_group(request):
 
     except Token.DoesNotExist:
         return JsonResponse(STATUS_CODE_498, status=498)
+
+
+def get_unread_number(id_user, group):
+    if (Notification.objects.filter(user_id=id_user, group_id=group.id).exists()):
+        notification = Notification.objects.get(user_id=id_user, group_id=group.id)
+        unread = len(group.messages.filter(updated_at__gte=notification.last_seen))
+        notification.last_seen = timezone.now()
+    else:
+        unread = 0
+    return unread
