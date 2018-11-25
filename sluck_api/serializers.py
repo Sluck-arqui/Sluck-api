@@ -110,10 +110,12 @@ class UserSummarySerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'username',
+            'email',
         )
         read_only_fields = (
             'id',
             'username',
+            'email',
         )
 
 
